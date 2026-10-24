@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>学习 App 图标</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script>/*ROUGH*/</script>
+<style>
+  @font-face { font-family: Hand; src: url(data:font/woff2;base64,/*HAND*/) format("woff2"); }
+  :root { --ink: #0b0b0c; --ink2: #55555a; --mute: #8a8a8e; --line: #e4e4e2; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: #f1f1ef; color: var(--ink); font-family: Geist, "Noto Sans SC", sans-serif; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .page { max-width: 1000px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+  .sub { margin-top: 6px; font-size: 14px; color: var(--ink2); line-height: 1.6; }
+
+  /* 四个方案 */
+  .opts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+  .opt { background: #fff; border-radius: 18px; padding: 18px 14px 14px; text-align: left; border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; }
+  .opt.on { border-color: var(--ink); }
+  .opt .big { width: 132px; height: 132px; }
+  .opt .sizes { display: flex; align-items: flex-end; gap: 14px; margin-top: 16px; }
+  .opt .sizes .ic:nth-child(1) { width: 56px; height: 56px; }
+  .opt .sizes .ic:nth-child(2) { width: 40px; height: 40px; }
+  .opt .sizes .ic.round:nth-child(3) { width: 56px; height: 56px; }
+  .opt b { align-self: stretch; margin-top: 14px; font-size: 15px; }
+  .opt p { align-self: stretch; margin-top: 4px; font-size: 12.5px; line-height: 1.55; color: var(--ink2); }
+
+  /* 图标：画布 108，蒙版只露中间 72（和安卓自适应图标一样） */
+  .ic { position: relative; border-radius: 24%; overflow: hidden; flex: none; box-shadow: 0 0 0 .5px rgba(0,0,0,.08); }
+  .ic.round { border-radius: 50%; }
+  .ic svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* 桌面样机 */
+  .ctl { display: flex; gap: 8px; justify-content: center; margin-top: 26px; }
+  .ctl button { height: 34px; padding: 0 14px; border-radius: 17px; background: #fff; border: 1px solid #e0e0e0; font-size: 13px; }
+  .ctl button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .phones { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; margin-top: 18px; }
+  .phone { position: relative; width: 360px; height: 760px; border-radius: 42px; overflow: hidden; box-shadow: 0 0 0 8px #141414, 0 24px 60px rgba(0,0,0,.18); }
+  .ph > small { display: block; text-align: center; margin-bottom: 10px; color: var(--mute); font-size: 12px; }
+  .wall { position: absolute; inset: 0; }
+  .sb { position: relative; height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 6px 26px 0; font-size: 14px; font-weight: 600; }
+  .home { position: relative; padding: 14px 18px 0; }
+  .wide { display: block; width: 100%; border-radius: 22px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 20px; margin-top: 22px; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 11.5px; }
+  .app .ic { width: 58px; height: 58px; }
+  .dock { position: absolute; left: 14px; right: 14px; bottom: 26px; height: 88px; border-radius: 30px; display: grid; grid-template-columns: repeat(4, 1fr); place-items: center; }
+  .dock .ic { width: 58px; height: 58px; }
+  .glyph { position: absolute; inset: 0; display: grid; place-items: center; }
+  .glyph svg { position: static; width: 46%; height: 46%; }
+
+  .dark .sb, .dark .app { color: #fff; }
+  .dark .app span { text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  .dark .dock { background: rgba(255,255,255,.12); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  .light .sb, .light .app { color: #1d1c1a; }
+  .light .dock { background: rgba(255,255,255,.45); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+
+  @media (max-width: 760px) { .opts { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 420px) { .phone { width: calc(100vw - 48px); } .opt .big { width: 110px; height: 110px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>学习 · 桌面图标</h1>
+  <p class="sub">四个方向都用 App 里的便利贴。点一个，下面两台手机换成它：一台是暗色壁纸，一台是亮色壁纸，旁边放着同一套桌面组件。每个方案下面的三个小图分别是桌面大小、文件夹里的小号、圆形蒙版。</p>
+  <div class="opts" id="opts"></div>
+  <div class="ctl" id="ctl"></div>
+  <div class="phones" id="phones"></div>
+</div>
+<script>
+const INK = "#1d1c1a", NS = "http://www.w3.org/2000/svg";
+const PHOTO = { 1: "/*PHOTO1*/", 2: "/*PHOTO2*/" };
+const WIDE = "/*WIDE*/";
+
+// ── 每个方案：bg(rc, g) 画底层，fg(rc, g) 画前景；都在 108×108 的画布上 ──
+const line = (s, w = 2.6, c = INK) => ({ seed: s, stroke: c, strokeWidth: w, roughness: 1.1, bowing: 1.2 });
+const dot = (s) => ({ seed: s, stroke: INK, strokeWidth: 0.8, fill: INK, fillStyle: "solid", roughness: 0.4 });
+const tapeOpt = (s) => ({ seed: s, stroke: "#9b978d", strokeWidth: 1.2, fill: "#dcd8cd", fillStyle: "hachure", hachureGap: 2.4, fillWeight: 1.1, roughness: 1.1 });
+const el = (tag, attrs, kids = []) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); kids.forEach((c) => c && n.appendChild(c)); return n; };
+const g = (attrs, kids) => el("g", attrs, [].concat(...kids));
+
+// App 里的便利贴小人（sketch.js 的 drawNote，100×100）
+const mascot = (rc, s) => [
+  rc.rectangle(18, 21, 64, 62, { seed: s, stroke: "none", fill: "#ffd84a", fillStyle: "hachure", hachureGap: 3, fillWeight: 2.4, hachureAngle: -42, roughness: 1.5 }),
+  rc.path("M16 19 L84 20 L83 70 L69 85 L17 84 Z", line(s, 2.4)),
+  rc.path("M83 70 L71 71 L69 85", line(s, 2)),
+  rc.rectangle(37, 11, 26, 11, tapeOpt(s)),
+  rc.ellipse(40, 46, 9, 10.5, dot(s)), rc.ellipse(60, 46, 9, 10.5, dot(s)),
+  rc.path("M41 59 Q50 66 59 59", line(s, 2.4)),
+];
+
+const OPTS = [
+  { k: "A", name: "整张便利贴", say: "图标本身就是一张黄纸：顶上一截胶带，右下角折起，中间是小人的脸。和桌面组件是同一张纸。",
+    bg: (rc) => [el("rect", { width: 108, height: 108, fill: "#ffe98a" }),
+      rc.rectangle(10, 10, 88, 88, { seed: 5, stroke: "none", fill: "#ffd84a", fillStyle: "hachure", hachureGap: 3.4, fillWeight: 1.6, hachureAngle: -42, roughness: 1.4 })],
+    fg: (rc) => [
+      rc.path("M90 74 L76 76 L74 90 L90 90 Z", { seed: 7, stroke: "none", fill: "#f2c93a", fillStyle: "solid", roughness: 0.6 }),
+      rc.path("M90 74 L76 76 L74 90", line(7, 2.2)),
+      rc.rectangle(40, 14, 28, 12, tapeOpt(4)),
+      rc.ellipse(44, 52, 8.5, 10, dot(3)), rc.ellipse(64, 52, 8.5, 10, dot(3)),
+      rc.path("M44 65 Q54 73 64 65", line(3, 3)),
+    ] },
+  { k: "B", name: "白底小人", say: "白底上贴着 App 里那个便利贴小人，歪一点。和 App 里引导、提示用的是同一个角色。",
+    bg: () => [el("rect", { width: 108, height: 108, fill: "#ffffff" })],
+    fg: (rc) => [g({ transform: "translate(54 56) rotate(-6) scale(.78) translate(-50 -48)" }, [mascot(rc, 3)])] },
+  { k: "C", name: "真图便利贴", say: "拍出来的一张真便利贴，马克笔画的脸。和课程封面是同一种静物照片的风格。", photo: 1 },
+  { k: "D", name: "学字", say: "黄底上手写一个「学」，左上角一截胶带。在一屏中文 App 里最好认，但没有小人。",
+    bg: (rc) => [el("rect", { width: 108, height: 108, fill: "#ffd84a" })],
+    fg: (rc) => [
+      el("text", { x: 54, y: 72, "text-anchor": "middle", "font-family": "Hand", "font-size": 46, fill: INK }, [document.createTextNode("学")]),
+      g({ transform: "translate(31 31) rotate(-38)" }, [rc.rectangle(-13, -5, 26, 10, tapeOpt(4))]),
+    ] },
+];
+const PHOTO_OPTS = [{ k: "C", n: 1, label: "正面" }, { k: "C", n: 2, label: "俯拍" }];
+let cur = "A", photoN = 1;
+
+function iconSVG(o, round) {
+  const svg = el("svg", { viewBox: "18 18 72 72", xmlns: NS });
+  const rc = rough.svg(svg);
+  if (o.photo) {
+    // 照片当整张底图，画布 108 里照片铺满，露出中间 72
+    svg.appendChild(el("image", { href: PHOTO[photoN], x: 6, y: 6, width: 96, height: 96, preserveAspectRatio: "xMidYMid slice" }));
+  } else {
+    o.bg(rc).forEach((n) => n && svg.appendChild(n));
+    o.fg(rc).forEach((n) => n && svg.appendChild(n));
+  }
+  return svg;
+}
+function icon(o, cls = "") {
+  const d = document.createElement("div"); d.className = "ic " + cls;
+  d.appendChild(iconSVG(o)); return d;
+}
+
+// 旁边的应用：纯色底 + 白色简单图形，只当陪衬
+const NB = [
+  ["相机", "#3a3a3c", '<circle cx="12" cy="12" r="5" fill="none" stroke="#fff" stroke-width="2"/><rect x="3" y="6" width="18" height="13" rx="3" fill="none" stroke="#fff" stroke-width="2"/>'],
+  ["相册", "#f2f2f2", '<circle cx="12" cy="12" r="7" fill="#ffb340"/><circle cx="12" cy="12" r="3.5" fill="#ff5e57"/>'],
+  ["日历", "#ffffff", '<text x="12" y="17" text-anchor="middle" font-size="13" font-weight="700" fill="#e2492f" font-family="Geist">23</text>'],
+  ["天气", "#4a9bff", '<circle cx="10" cy="10" r="4" fill="#ffd84a"/><rect x="7" y="12" width="13" height="6" rx="3" fill="#fff"/>'],
+  ["音乐", "#ff4d6a", '<path d="M9 17V7l9-2v10" fill="none" stroke="#fff" stroke-width="2"/><circle cx="7.5" cy="17" r="2" fill="#fff"/><circle cx="16.5" cy="15" r="2" fill="#fff"/>'],
+  ["备忘录", "#ffcc33", '<rect x="6" y="5" width="12" height="14" rx="2" fill="#fff"/><path d="M8.5 9h7M8.5 12h7M8.5 15h4" stroke="#c9a227" stroke-width="1.3"/>'],
+  ["文件", "#2f6bff", '<path d="M5 8h5l2 2h7v8H5z" fill="#fff"/>'],
+  ["设置", "#8e8e93", '<circle cx="12" cy="12" r="6" fill="none" stroke="#fff" stroke-width="2.4" stroke-dasharray="3 1.7"/><circle cx="12" cy="12" r="2.2" fill="#fff"/>'],
+  ["时钟", "#1c1c1e", '<circle cx="12" cy="12" r="7" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="#fff" stroke-width="1.6" fill="none"/>'],
+  ["计算器", "#ff9f0a", '<path d="M7 9h10M7 15h10M12 12v6" stroke="#fff" stroke-width="2"/>'],
+  ["电话", "#34c759", '<path d="M8 5l3 3-2 2a9 9 0 0 0 5 5l2-2 3 3-2 3C10 19 5 14 5 8z" fill="#fff"/>'],
+  ["短信", "#34c759", '<path d="M5 7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5l-4 3v-3a3 3 0 0 1-2-3z" fill="#fff"/>'],
+  ["浏览器", "#ffffff", '<circle cx="12" cy="12" r="7" fill="none" stroke="#2f6bff" stroke-width="2"/><path d="M14.5 9.5l-1.5 3.5-3.5 1.5 1.5-3.5z" fill="#e2492f"/>'],
+];
+function nb(i) {
+  const [name, bg, glyph] = NB[i];
+  const d = document.createElement("div"); d.className = "app";
+  d.innerHTML = `<div class="ic" style="background:${bg}"><div class="glyph"><svg viewBox="0 0 24 24">${glyph}</svg></div></div><span>${name}</span>`;
+  return d;
+}
+
+// 暗色壁纸：黑底上几道铜橙色发光弧线（照小明现在的桌面）；亮色壁纸：浅暖灰
+function wall(kind) {
+  const w = document.createElement("div"); w.className = "wall";
+  if (kind === "light") { w.style.background = "radial-gradient(120% 70% at 20% 10%, #fbf6ec 0%, #ece7dd 55%, #dcd8cf 100%)"; return w; }
+  w.style.background = "#060505";
+  w.innerHTML = `<svg viewBox="0 0 360 760" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+    <linearGradient id="cu" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a4a"/><stop offset=".6" stop-color="#c7612a"/><stop offset="1" stop-color="#5a2a12"/></linearGradient></defs>
+    <g fill="none" stroke="url(#cu)">
+      <circle cx="420" cy="980" r="560" stroke-width="10" filter="url(#glow)" opacity=".8"/><circle cx="420" cy="980" r="560" stroke-width="2"/>
+      <circle cx="-80" cy="1060" r="520" stroke-width="8" filter="url(#glow)" opacity=".55"/><circle cx="-80" cy="1060" r="520" stroke-width="1.5" opacity=".8"/>
+      <circle cx="520" cy="-140" r="380" stroke-width="6" filter="url(#glow)" opacity=".35"/><circle cx="520" cy="-140" r="380" stroke-width="1.2" opacity=".6"/>
+    </g></svg>`;
+  return w;
+}
+function phone(kind) {
+  const o = OPTS.find((x) => x.k === cur);
+  const box = document.createElement("div"); box.className = "ph";
+  box.innerHTML = `<small>${kind === "dark" ? "暗色壁纸" : "亮色壁纸"}</small>`;
+  const p = document.createElement("div"); p.className = "phone " + kind;
+  p.appendChild(wall(kind));
+  p.insertAdjacentHTML("beforeend", `<div class="sb"><span>22:20</span><span>5G ▮</span></div>`);
+  const home = document.createElement("div"); home.className = "home";
+  home.insertAdjacentHTML("beforeend", `<img class="wide" src="${WIDE}" alt="">`);
+  const grid = document.createElement("div"); grid.className = "grid";
+  [0, 1, 2, 3, 4, 5].forEach((i) => grid.appendChild(nb(i)));
+  const me = document.createElement("div"); me.className = "app";
+  me.appendChild(icon(o)); me.insertAdjacentHTML("beforeend", "<span>学习</span>");
+  grid.appendChild(me);
+  [6, 7, 8, 9, 12].forEach((i) => grid.appendChild(nb(i)));
+  home.appendChild(grid); p.appendChild(home);
+  const dock = document.createElement("div"); dock.className = "dock";
+  [10, 11, 12, 0].forEach((i) => { const a = nb(i); a.querySelector("span").remove(); dock.appendChild(a); });
+  p.appendChild(dock);
+  box.appendChild(p); return box;
+}
+
+function render() {
+  const opts = document.getElementById("opts"); opts.innerHTML = "";
+  for (const o of OPTS) {
+    const b = document.createElement("button"); b.className = "opt" + (o.k === cur ? " on" : "");
+    b.appendChild(icon(o, "big"));
+    const s = document.createElement("div"); s.className = "sizes";
+    s.append(icon(o), icon(o), icon(o, "round")); b.appendChild(s);
+    b.insertAdjacentHTML("beforeend", `<b>${o.k}　${o.name}</b><p>${o.say}</p>`);
+    b.onclick = () => { cur = o.k; render(); };
+    opts.appendChild(b);
+  }
+  const ctl = document.getElementById("ctl"); ctl.innerHTML = "";
+  if (cur === "C") for (const x of PHOTO_OPTS) {
+    const b = document.createElement("button"); b.className = photoN === x.n ? "on" : ""; b.textContent = "照片：" + x.label;
+    b.onclick = () => { photoN = x.n; render(); }; ctl.appendChild(b);
+  }
+  const ph = document.getElementById("phones"); ph.innerHTML = "";
+  ph.append(phone("dark"), phone("light"));
+}
+// 导出给安卓：前景、背景各一张（108 画布）
+window.layers = (k) => {
+  const o = OPTS.find((x) => x.k === k);
+  const mk = (part) => { const svg = el("svg", { viewBox: "0 0 108 108", xmlns: NS, width: 432, height: 432 }); const rc = rough.svg(svg); o[part](rc).forEach((n) => n && svg.appendChild(n)); return svg.outerHTML; };
+  return o.photo ? null : { bg: mk("bg"), fg: mk("fg") };
+};
+document.fonts.load("46px Hand", "学").then(render, render);
+</script>
+</body>
+</html>

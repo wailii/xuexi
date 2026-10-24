@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>角色和大字</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/lxgwwenkaigbscreen.css" media="print" onload="this.media='all'">
+<script>var rough=function(){"use strict";function t(t,e,s){if(t&&t.length){const[n,o]=e,a=Math.PI/180*s,h=Math.cos(a),r=Math.sin(a);for(const e of t){const[t,s]=e;e[0]=(t-n)*h-(s-o)*r+n,e[1]=(t-n)*r+(s-o)*h+o}}}function e(t,e){return t[0]===e[0]&&t[1]===e[1]}function s(s,n,o,a=1){const h=o,r=Math.max(n,.1),i=s[0]&&s[0][0]&&"number"==typeof s[0][0]?[s]:s,c=[0,0];if(h)for(const e of i)t(e,c,h);const l=function(t,s,n){const o=[];for(const s of t){const t=[...s];e(t[0],t[t.length-1])||t.push([t[0][0],t[0][1]]),t.length>2&&o.push(t)}const a=[];s=Math.max(s,.1);const h=[];for(const t of o)for(let e=0;e<t.length-1;e++){const s=t[e],n=t[e+1];if(s[1]!==n[1]){const t=Math.min(s[1],n[1]);h.push({ymin:t,ymax:Math.max(s[1],n[1]),x:t===s[1]?s[0]:n[0],islope:(n[0]-s[0])/(n[1]-s[1])})}}if(h.sort(((t,e)=>t.ymin<e.ymin?-1:t.ymin>e.ymin?1:t.x<e.x?-1:t.x>e.x?1:t.ymax===e.ymax?0:(t.ymax-e.ymax)/Math.abs(t.ymax-e.ymax))),!h.length)return a;let r=[],i=h[0].ymin,c=0;for(;r.length||h.length;){if(h.length){let t=-1;for(let e=0;e<h.length&&!(h[e].ymin>i);e++)t=e;h.splice(0,t+1).forEach((t=>{r.push({s:i,edge:t})}))}if(r=r.filter((t=>!(t.edge.ymax<=i))),r.sort(((t,e)=>t.edge.x===e.edge.x?0:(t.edge.x-e.edge.x)/Math.abs(t.edge.x-e.edge.x))),(1!==n||c%s==0)&&r.length>1)for(let t=0;t<r.length;t+=2){const e=t+1;if(e>=r.length)break;const s=r[t].edge,n=r[e].edge;a.push([[Math.round(s.x),i],[Math.round(n.x),i]])}i+=n,r.forEach((t=>{t.edge.x=t.edge.x+n*t.edge.islope})),c++}return a}(i,r,a);if(h){for(const e of i)t(e,c,-h);!function(e,s,n){const o=[];e.forEach((t=>o.push(...t))),t(o,s,n)}(l,c,-h)}return l}function n(t,e){var n;const o=e.hachureAngle+90;let a=e.hachureGap;a<0&&(a=4*e.strokeWidth),a=Math.round(Math.max(a,.1));let h=1;return e.roughness>=1&&((null===(n=e.randomizer)||void 0===n?void 0:n.next())||Math.random())>.7&&(h=a),s(t,a,o,h||1)}class o{constructor(t){this.helper=t}fillPolygons(t,e){return this._fillPolygons(t,e)}_fillPolygons(t,e){const s=n(t,e);return{type:"fillSketch",ops:this.renderLines(s,e)}}renderLines(t,e){const s=[];for(const n of t)s.push(...this.helper.doubleLineOps(n[0][0],n[0][1],n[1][0],n[1][1],e));return s}}function a(t){const e=t[0],s=t[1];return Math.sqrt(Math.pow(e[0]-s[0],2)+Math.pow(e[1]-s[1],2))}class h extends o{fillPolygons(t,e){let s=e.hachureGap;s<0&&(s=4*e.strokeWidth),s=Math.max(s,.1);const o=n(t,Object.assign({},e,{hachureGap:s})),h=Math.PI/180*e.hachureAngle,r=[],i=.5*s*Math.cos(h),c=.5*s*Math.sin(h);for(const[t,e]of o)a([t,e])&&r.push([[t[0]-i,t[1]+c],[...e]],[[t[0]+i,t[1]-c],[...e]]);return{type:"fillSketch",ops:this.renderLines(r,e)}}}class r extends o{fillPolygons(t,e){const s=this._fillPolygons(t,e),n=Object.assign({},e,{hachureAngle:e.hachureAngle+90}),o=this._fillPolygons(t,n);return s.ops=s.ops.concat(o.ops),s}}class i{constructor(t){this.helper=t}fillPolygons(t,e){const s=n(t,e=Object.assign({},e,{hachureAngle:0}));return this.dotsOnLines(s,e)}dotsOnLines(t,e){const s=[];let n=e.hachureGap;n<0&&(n=4*e.strokeWidth),n=Math.max(n,.1);let o=e.fillWeight;o<0&&(o=e.strokeWidth/2);const h=n/4;for(const r of t){const t=a(r),i=t/n,c=Math.ceil(i)-1,l=t-c*n,u=(r[0][0]+r[1][0])/2-n/4,p=Math.min(r[0][1],r[1][1]);for(let t=0;t<c;t++){const a=p+l+t*n,r=u-h+2*Math.random()*h,i=a-h+2*Math.random()*h,c=this.helper.ellipse(r,i,o,o,e);s.push(...c.ops)}}return{type:"fillSketch",ops:s}}}class c{constructor(t){this.helper=t}fillPolygons(t,e){const s=n(t,e);return{type:"fillSketch",ops:this.dashedLine(s,e)}}dashedLine(t,e){const s=e.dashOffset<0?e.hachureGap<0?4*e.strokeWidth:e.hachureGap:e.dashOffset,n=e.dashGap<0?e.hachureGap<0?4*e.strokeWidth:e.hachureGap:e.dashGap,o=[];return t.forEach((t=>{const h=a(t),r=Math.floor(h/(s+n)),i=(h+n-r*(s+n))/2;let c=t[0],l=t[1];c[0]>l[0]&&(c=t[1],l=t[0]);const u=Math.atan((l[1]-c[1])/(l[0]-c[0]));for(let t=0;t<r;t++){const a=t*(s+n),h=a+s,r=[c[0]+a*Math.cos(u)+i*Math.cos(u),c[1]+a*Math.sin(u)+i*Math.sin(u)],l=[c[0]+h*Math.cos(u)+i*Math.cos(u),c[1]+h*Math.sin(u)+i*Math.sin(u)];o.push(...this.helper.doubleLineOps(r[0],r[1],l[0],l[1],e))}})),o}}class l{constructor(t){this.helper=t}fillPolygons(t,e){const s=e.hachureGap<0?4*e.strokeWidth:e.hachureGap,o=e.zigzagOffset<0?s:e.zigzagOffset,a=n(t,e=Object.assign({},e,{hachureGap:s+o}));return{type:"fillSketch",ops:this.zigzagLines(a,o,e)}}zigzagLines(t,e,s){const n=[];return t.forEach((t=>{const o=a(t),h=Math.round(o/(2*e));let r=t[0],i=t[1];r[0]>i[0]&&(r=t[1],i=t[0]);const c=Math.atan((i[1]-r[1])/(i[0]-r[0]));for(let t=0;t<h;t++){const o=2*t*e,a=2*(t+1)*e,h=Math.sqrt(2*Math.pow(e,2)),i=[r[0]+o*Math.cos(c),r[1]+o*Math.sin(c)],l=[r[0]+a*Math.cos(c),r[1]+a*Math.sin(c)],u=[i[0]+h*Math.cos(c+Math.PI/4),i[1]+h*Math.sin(c+Math.PI/4)];n.push(...this.helper.doubleLineOps(i[0],i[1],u[0],u[1],s),...this.helper.doubleLineOps(u[0],u[1],l[0],l[1],s))}})),n}}const u={};class p{constructor(t){this.seed=t}next(){return this.seed?(2**31-1&(this.seed=Math.imul(48271,this.seed)))/2**31:Math.random()}}const f=0,d=1,g=2,M={A:7,a:7,C:6,c:6,H:1,h:1,L:2,l:2,M:2,m:2,Q:4,q:4,S:4,s:4,T:2,t:2,V:1,v:1,Z:0,z:0};function k(t,e){return t.type===e}function b(t){const e=[],s=function(t){const e=new Array;for(;""!==t;)if(t.match(/^([ \t\r\n,]+)/))t=t.substr(RegExp.$1.length);else if(t.match(/^([aAcChHlLmMqQsStTvVzZ])/))e[e.length]={type:f,text:RegExp.$1},t=t.substr(RegExp.$1.length);else{if(!t.match(/^(([-+]?[0-9]+(\.[0-9]*)?|[-+]?\.[0-9]+)([eE][-+]?[0-9]+)?)/))return[];e[e.length]={type:d,text:`${parseFloat(RegExp.$1)}`},t=t.substr(RegExp.$1.length)}return e[e.length]={type:g,text:""},e}(t);let n="BOD",o=0,a=s[o];for(;!k(a,g);){let h=0;const r=[];if("BOD"===n){if("M"!==a.text&&"m"!==a.text)return b("M0,0"+t);o++,h=M[a.text],n=a.text}else k(a,d)?h=M[n]:(o++,h=M[a.text],n=a.text);if(!(o+h<s.length))throw new Error("Path data ended short");for(let t=o;t<o+h;t++){const e=s[t];if(!k(e,d))throw new Error("Param not a number: "+n+","+e.text);r[r.length]=+e.text}if("number"!=typeof M[n])throw new Error("Bad segment: "+n);{const t={key:n,data:r};e.push(t),o+=h,a=s[o],"M"===n&&(n="L"),"m"===n&&(n="l")}}return e}function y(t){let e=0,s=0,n=0,o=0;const a=[];for(const{key:h,data:r}of t)switch(h){case"M":a.push({key:"M",data:[...r]}),[e,s]=r,[n,o]=r;break;case"m":e+=r[0],s+=r[1],a.push({key:"M",data:[e,s]}),n=e,o=s;break;case"L":a.push({key:"L",data:[...r]}),[e,s]=r;break;case"l":e+=r[0],s+=r[1],a.push({key:"L",data:[e,s]});break;case"C":a.push({key:"C",data:[...r]}),e=r[4],s=r[5];break;case"c":{const t=r.map(((t,n)=>n%2?t+s:t+e));a.push({key:"C",data:t}),e=t[4],s=t[5];break}case"Q":a.push({key:"Q",data:[...r]}),e=r[2],s=r[3];break;case"q":{const t=r.map(((t,n)=>n%2?t+s:t+e));a.push({key:"Q",data:t}),e=t[2],s=t[3];break}case"A":a.push({key:"A",data:[...r]}),e=r[5],s=r[6];break;case"a":e+=r[5],s+=r[6],a.push({key:"A",data:[r[0],r[1],r[2],r[3],r[4],e,s]});break;case"H":a.push({key:"H",data:[...r]}),e=r[0];break;case"h":e+=r[0],a.push({key:"H",data:[e]});break;case"V":a.push({key:"V",data:[...r]}),s=r[0];break;case"v":s+=r[0],a.push({key:"V",data:[s]});break;case"S":a.push({key:"S",data:[...r]}),e=r[2],s=r[3];break;case"s":{const t=r.map(((t,n)=>n%2?t+s:t+e));a.push({key:"S",data:t}),e=t[2],s=t[3];break}case"T":a.push({key:"T",data:[...r]}),e=r[0],s=r[1];break;case"t":e+=r[0],s+=r[1],a.push({key:"T",data:[e,s]});break;case"Z":case"z":a.push({key:"Z",data:[]}),e=n,s=o}return a}function m(t){const e=[];let s="",n=0,o=0,a=0,h=0,r=0,i=0;for(const{key:c,data:l}of t){switch(c){case"M":e.push({key:"M",data:[...l]}),[n,o]=l,[a,h]=l;break;case"C":e.push({key:"C",data:[...l]}),n=l[4],o=l[5],r=l[2],i=l[3];break;case"L":e.push({key:"L",data:[...l]}),[n,o]=l;break;case"H":n=l[0],e.push({key:"L",data:[n,o]});break;case"V":o=l[0],e.push({key:"L",data:[n,o]});break;case"S":{let t=0,a=0;"C"===s||"S"===s?(t=n+(n-r),a=o+(o-i)):(t=n,a=o),e.push({key:"C",data:[t,a,...l]}),r=l[0],i=l[1],n=l[2],o=l[3];break}case"T":{const[t,a]=l;let h=0,c=0;"Q"===s||"T"===s?(h=n+(n-r),c=o+(o-i)):(h=n,c=o);const u=n+2*(h-n)/3,p=o+2*(c-o)/3,f=t+2*(h-t)/3,d=a+2*(c-a)/3;e.push({key:"C",data:[u,p,f,d,t,a]}),r=h,i=c,n=t,o=a;break}case"Q":{const[t,s,a,h]=l,c=n+2*(t-n)/3,u=o+2*(s-o)/3,p=a+2*(t-a)/3,f=h+2*(s-h)/3;e.push({key:"C",data:[c,u,p,f,a,h]}),r=t,i=s,n=a,o=h;break}case"A":{const t=Math.abs(l[0]),s=Math.abs(l[1]),a=l[2],h=l[3],r=l[4],i=l[5],c=l[6];if(0===t||0===s)e.push({key:"C",data:[n,o,i,c,i,c]}),n=i,o=c;else if(n!==i||o!==c){x(n,o,i,c,t,s,a,h,r).forEach((function(t){e.push({key:"C",data:t})})),n=i,o=c}break}case"Z":e.push({key:"Z",data:[]}),n=a,o=h}s=c}return e}function w(t,e,s){return[t*Math.cos(s)-e*Math.sin(s),t*Math.sin(s)+e*Math.cos(s)]}function x(t,e,s,n,o,a,h,r,i,c){const l=(u=h,Math.PI*u/180);var u;let p=[],f=0,d=0,g=0,M=0;if(c)[f,d,g,M]=c;else{[t,e]=w(t,e,-l),[s,n]=w(s,n,-l);const h=(t-s)/2,c=(e-n)/2;let u=h*h/(o*o)+c*c/(a*a);u>1&&(u=Math.sqrt(u),o*=u,a*=u);const p=o*o,k=a*a,b=p*k-p*c*c-k*h*h,y=p*c*c+k*h*h,m=(r===i?-1:1)*Math.sqrt(Math.abs(b/y));g=m*o*c/a+(t+s)/2,M=m*-a*h/o+(e+n)/2,f=Math.asin(parseFloat(((e-M)/a).toFixed(9))),d=Math.asin(parseFloat(((n-M)/a).toFixed(9))),t<g&&(f=Math.PI-f),s<g&&(d=Math.PI-d),f<0&&(f=2*Math.PI+f),d<0&&(d=2*Math.PI+d),i&&f>d&&(f-=2*Math.PI),!i&&d>f&&(d-=2*Math.PI)}let k=d-f;if(Math.abs(k)>120*Math.PI/180){const t=d,e=s,r=n;d=i&&d>f?f+120*Math.PI/180*1:f+120*Math.PI/180*-1,p=x(s=g+o*Math.cos(d),n=M+a*Math.sin(d),e,r,o,a,h,0,i,[d,t,g,M])}k=d-f;const b=Math.cos(f),y=Math.sin(f),m=Math.cos(d),P=Math.sin(d),v=Math.tan(k/4),S=4/3*o*v,O=4/3*a*v,L=[t,e],T=[t+S*y,e-O*b],D=[s+S*P,n-O*m],A=[s,n];if(T[0]=2*L[0]-T[0],T[1]=2*L[1]-T[1],c)return[T,D,A].concat(p);{p=[T,D,A].concat(p);const t=[];for(let e=0;e<p.length;e+=3){const s=w(p[e][0],p[e][1],l),n=w(p[e+1][0],p[e+1][1],l),o=w(p[e+2][0],p[e+2][1],l);t.push([s[0],s[1],n[0],n[1],o[0],o[1]])}return t}}const P={randOffset:function(t,e){return G(t,e)},randOffsetWithRange:function(t,e,s){return E(t,e,s)},ellipse:function(t,e,s,n,o){const a=T(s,n,o);return D(t,e,o,a).opset},doubleLineOps:function(t,e,s,n,o){return $(t,e,s,n,o,!0)}};function v(t,e,s,n,o){return{type:"path",ops:$(t,e,s,n,o)}}function S(t,e,s){const n=(t||[]).length;if(n>2){const o=[];for(let e=0;e<n-1;e++)o.push(...$(t[e][0],t[e][1],t[e+1][0],t[e+1][1],s));return e&&o.push(...$(t[n-1][0],t[n-1][1],t[0][0],t[0][1],s)),{type:"path",ops:o}}return 2===n?v(t[0][0],t[0][1],t[1][0],t[1][1],s):{type:"path",ops:[]}}function O(t,e,s,n,o){return function(t,e){return S(t,!0,e)}([[t,e],[t+s,e],[t+s,e+n],[t,e+n]],o)}function L(t,e){if(t.length){const s="number"==typeof t[0][0]?[t]:t,n=j(s[0],1*(1+.2*e.roughness),e),o=e.disableMultiStroke?[]:j(s[0],1.5*(1+.22*e.roughness),z(e));for(let t=1;t<s.length;t++){const a=s[t];if(a.length){const t=j(a,1*(1+.2*e.roughness),e),s=e.disableMultiStroke?[]:j(a,1.5*(1+.22*e.roughness),z(e));for(const e of t)"move"!==e.op&&n.push(e);for(const t of s)"move"!==t.op&&o.push(t)}}return{type:"path",ops:n.concat(o)}}return{type:"path",ops:[]}}function T(t,e,s){const n=Math.sqrt(2*Math.PI*Math.sqrt((Math.pow(t/2,2)+Math.pow(e/2,2))/2)),o=Math.ceil(Math.max(s.curveStepCount,s.curveStepCount/Math.sqrt(200)*n)),a=2*Math.PI/o;let h=Math.abs(t/2),r=Math.abs(e/2);const i=1-s.curveFitting;return h+=G(h*i,s),r+=G(r*i,s),{increment:a,rx:h,ry:r}}function D(t,e,s,n){const[o,a]=F(n.increment,t,e,n.rx,n.ry,1,n.increment*E(.1,E(.4,1,s),s),s);let h=q(o,null,s);if(!s.disableMultiStroke&&0!==s.roughness){const[o]=F(n.increment,t,e,n.rx,n.ry,1.5,0,s),a=q(o,null,s);h=h.concat(a)}return{estimatedPoints:a,opset:{type:"path",ops:h}}}function A(t,e,s,n,o,a,h,r,i){const c=t,l=e;let u=Math.abs(s/2),p=Math.abs(n/2);u+=G(.01*u,i),p+=G(.01*p,i);let f=o,d=a;for(;f<0;)f+=2*Math.PI,d+=2*Math.PI;d-f>2*Math.PI&&(f=0,d=2*Math.PI);const g=2*Math.PI/i.curveStepCount,M=Math.min(g/2,(d-f)/2),k=V(M,c,l,u,p,f,d,1,i);if(!i.disableMultiStroke){const t=V(M,c,l,u,p,f,d,1.5,i);k.push(...t)}return h&&(r?k.push(...$(c,l,c+u*Math.cos(f),l+p*Math.sin(f),i),...$(c,l,c+u*Math.cos(d),l+p*Math.sin(d),i)):k.push({op:"lineTo",data:[c,l]},{op:"lineTo",data:[c+u*Math.cos(f),l+p*Math.sin(f)]})),{type:"path",ops:k}}function _(t,e){const s=m(y(b(t))),n=[];let o=[0,0],a=[0,0];for(const{key:t,data:h}of s)switch(t){case"M":a=[h[0],h[1]],o=[h[0],h[1]];break;case"L":n.push(...$(a[0],a[1],h[0],h[1],e)),a=[h[0],h[1]];break;case"C":{const[t,s,o,r,i,c]=h;n.push(...Z(t,s,o,r,i,c,a,e)),a=[i,c];break}case"Z":n.push(...$(a[0],a[1],o[0],o[1],e)),a=[o[0],o[1]]}return{type:"path",ops:n}}function I(t,e){const s=[];for(const n of t)if(n.length){const t=e.maxRandomnessOffset||0,o=n.length;if(o>2){s.push({op:"move",data:[n[0][0]+G(t,e),n[0][1]+G(t,e)]});for(let a=1;a<o;a++)s.push({op:"lineTo",data:[n[a][0]+G(t,e),n[a][1]+G(t,e)]})}}return{type:"fillPath",ops:s}}function C(t,e){return function(t,e){let s=t.fillStyle||"hachure";if(!u[s])switch(s){case"zigzag":u[s]||(u[s]=new h(e));break;case"cross-hatch":u[s]||(u[s]=new r(e));break;case"dots":u[s]||(u[s]=new i(e));break;case"dashed":u[s]||(u[s]=new c(e));break;case"zigzag-line":u[s]||(u[s]=new l(e));break;default:s="hachure",u[s]||(u[s]=new o(e))}return u[s]}(e,P).fillPolygons(t,e)}function z(t){const e=Object.assign({},t);return e.randomizer=void 0,t.seed&&(e.seed=t.seed+1),e}function W(t){return t.randomizer||(t.randomizer=new p(t.seed||0)),t.randomizer.next()}function E(t,e,s,n=1){return s.roughness*n*(W(s)*(e-t)+t)}function G(t,e,s=1){return E(-t,t,e,s)}function $(t,e,s,n,o,a=!1){const h=a?o.disableMultiStrokeFill:o.disableMultiStroke,r=R(t,e,s,n,o,!0,!1);if(h)return r;const i=R(t,e,s,n,o,!0,!0);return r.concat(i)}function R(t,e,s,n,o,a,h){const r=Math.pow(t-s,2)+Math.pow(e-n,2),i=Math.sqrt(r);let c=1;c=i<200?1:i>500?.4:-.0016668*i+1.233334;let l=o.maxRandomnessOffset||0;l*l*100>r&&(l=i/10);const u=l/2,p=.2+.2*W(o);let f=o.bowing*o.maxRandomnessOffset*(n-e)/200,d=o.bowing*o.maxRandomnessOffset*(t-s)/200;f=G(f,o,c),d=G(d,o,c);const g=[],M=()=>G(u,o,c),k=()=>G(l,o,c),b=o.preserveVertices;return a&&(h?g.push({op:"move",data:[t+(b?0:M()),e+(b?0:M())]}):g.push({op:"move",data:[t+(b?0:G(l,o,c)),e+(b?0:G(l,o,c))]})),h?g.push({op:"bcurveTo",data:[f+t+(s-t)*p+M(),d+e+(n-e)*p+M(),f+t+2*(s-t)*p+M(),d+e+2*(n-e)*p+M(),s+(b?0:M()),n+(b?0:M())]}):g.push({op:"bcurveTo",data:[f+t+(s-t)*p+k(),d+e+(n-e)*p+k(),f+t+2*(s-t)*p+k(),d+e+2*(n-e)*p+k(),s+(b?0:k()),n+(b?0:k())]}),g}function j(t,e,s){if(!t.length)return[];const n=[];n.push([t[0][0]+G(e,s),t[0][1]+G(e,s)]),n.push([t[0][0]+G(e,s),t[0][1]+G(e,s)]);for(let o=1;o<t.length;o++)n.push([t[o][0]+G(e,s),t[o][1]+G(e,s)]),o===t.length-1&&n.push([t[o][0]+G(e,s),t[o][1]+G(e,s)]);return q(n,null,s)}function q(t,e,s){const n=t.length,o=[];if(n>3){const a=[],h=1-s.curveTightness;o.push({op:"move",data:[t[1][0],t[1][1]]});for(let e=1;e+2<n;e++){const s=t[e];a[0]=[s[0],s[1]],a[1]=[s[0]+(h*t[e+1][0]-h*t[e-1][0])/6,s[1]+(h*t[e+1][1]-h*t[e-1][1])/6],a[2]=[t[e+1][0]+(h*t[e][0]-h*t[e+2][0])/6,t[e+1][1]+(h*t[e][1]-h*t[e+2][1])/6],a[3]=[t[e+1][0],t[e+1][1]],o.push({op:"bcurveTo",data:[a[1][0],a[1][1],a[2][0],a[2][1],a[3][0],a[3][1]]})}if(e&&2===e.length){const t=s.maxRandomnessOffset;o.push({op:"lineTo",data:[e[0]+G(t,s),e[1]+G(t,s)]})}}else 3===n?(o.push({op:"move",data:[t[1][0],t[1][1]]}),o.push({op:"bcurveTo",data:[t[1][0],t[1][1],t[2][0],t[2][1],t[2][0],t[2][1]]})):2===n&&o.push(...R(t[0][0],t[0][1],t[1][0],t[1][1],s,!0,!0));return o}function F(t,e,s,n,o,a,h,r){const i=[],c=[];if(0===r.roughness){t/=4,c.push([e+n*Math.cos(-t),s+o*Math.sin(-t)]);for(let a=0;a<=2*Math.PI;a+=t){const t=[e+n*Math.cos(a),s+o*Math.sin(a)];i.push(t),c.push(t)}c.push([e+n*Math.cos(0),s+o*Math.sin(0)]),c.push([e+n*Math.cos(t),s+o*Math.sin(t)])}else{const l=G(.5,r)-Math.PI/2;c.push([G(a,r)+e+.9*n*Math.cos(l-t),G(a,r)+s+.9*o*Math.sin(l-t)]);const u=2*Math.PI+l-.01;for(let h=l;h<u;h+=t){const t=[G(a,r)+e+n*Math.cos(h),G(a,r)+s+o*Math.sin(h)];i.push(t),c.push(t)}c.push([G(a,r)+e+n*Math.cos(l+2*Math.PI+.5*h),G(a,r)+s+o*Math.sin(l+2*Math.PI+.5*h)]),c.push([G(a,r)+e+.98*n*Math.cos(l+h),G(a,r)+s+.98*o*Math.sin(l+h)]),c.push([G(a,r)+e+.9*n*Math.cos(l+.5*h),G(a,r)+s+.9*o*Math.sin(l+.5*h)])}return[c,i]}function V(t,e,s,n,o,a,h,r,i){const c=a+G(.1,i),l=[];l.push([G(r,i)+e+.9*n*Math.cos(c-t),G(r,i)+s+.9*o*Math.sin(c-t)]);for(let a=c;a<=h;a+=t)l.push([G(r,i)+e+n*Math.cos(a),G(r,i)+s+o*Math.sin(a)]);return l.push([e+n*Math.cos(h),s+o*Math.sin(h)]),l.push([e+n*Math.cos(h),s+o*Math.sin(h)]),q(l,null,i)}function Z(t,e,s,n,o,a,h,r){const i=[],c=[r.maxRandomnessOffset||1,(r.maxRandomnessOffset||1)+.3];let l=[0,0];const u=r.disableMultiStroke?1:2,p=r.preserveVertices;for(let f=0;f<u;f++)0===f?i.push({op:"move",data:[h[0],h[1]]}):i.push({op:"move",data:[h[0]+(p?0:G(c[0],r)),h[1]+(p?0:G(c[0],r))]}),l=p?[o,a]:[o+G(c[f],r),a+G(c[f],r)],i.push({op:"bcurveTo",data:[t+G(c[f],r),e+G(c[f],r),s+G(c[f],r),n+G(c[f],r),l[0],l[1]]});return i}function Q(t){return[...t]}function H(t,e=0){const s=t.length;if(s<3)throw new Error("A curve must have at least three points.");const n=[];if(3===s)n.push(Q(t[0]),Q(t[1]),Q(t[2]),Q(t[2]));else{const s=[];s.push(t[0],t[0]);for(let e=1;e<t.length;e++)s.push(t[e]),e===t.length-1&&s.push(t[e]);const o=[],a=1-e;n.push(Q(s[0]));for(let t=1;t+2<s.length;t++){const e=s[t];o[0]=[e[0],e[1]],o[1]=[e[0]+(a*s[t+1][0]-a*s[t-1][0])/6,e[1]+(a*s[t+1][1]-a*s[t-1][1])/6],o[2]=[s[t+1][0]+(a*s[t][0]-a*s[t+2][0])/6,s[t+1][1]+(a*s[t][1]-a*s[t+2][1])/6],o[3]=[s[t+1][0],s[t+1][1]],n.push(o[1],o[2],o[3])}}return n}function N(t,e){return Math.pow(t[0]-e[0],2)+Math.pow(t[1]-e[1],2)}function B(t,e,s){const n=N(e,s);if(0===n)return N(t,e);let o=((t[0]-e[0])*(s[0]-e[0])+(t[1]-e[1])*(s[1]-e[1]))/n;return o=Math.max(0,Math.min(1,o)),N(t,J(e,s,o))}function J(t,e,s){return[t[0]+(e[0]-t[0])*s,t[1]+(e[1]-t[1])*s]}function K(t,e,s,n){const o=n||[];if(function(t,e){const s=t[e+0],n=t[e+1],o=t[e+2],a=t[e+3];let h=3*n[0]-2*s[0]-a[0];h*=h;let r=3*n[1]-2*s[1]-a[1];r*=r;let i=3*o[0]-2*a[0]-s[0];i*=i;let c=3*o[1]-2*a[1]-s[1];return c*=c,h<i&&(h=i),r<c&&(r=c),h+r}(t,e)<s){const s=t[e+0];if(o.length){(a=o[o.length-1],h=s,Math.sqrt(N(a,h)))>1&&o.push(s)}else o.push(s);o.push(t[e+3])}else{const n=.5,a=t[e+0],h=t[e+1],r=t[e+2],i=t[e+3],c=J(a,h,n),l=J(h,r,n),u=J(r,i,n),p=J(c,l,n),f=J(l,u,n),d=J(p,f,n);K([a,c,p,d],0,s,o),K([d,f,u,i],0,s,o)}var a,h;return o}function U(t,e){return X(t,0,t.length,e)}function X(t,e,s,n,o){const a=o||[],h=t[e],r=t[s-1];let i=0,c=1;for(let n=e+1;n<s-1;++n){const e=B(t[n],h,r);e>i&&(i=e,c=n)}return Math.sqrt(i)>n?(X(t,e,c+1,n,a),X(t,c,s,n,a)):(a.length||a.push(h),a.push(r)),a}function Y(t,e=.15,s){const n=[],o=(t.length-1)/3;for(let s=0;s<o;s++){K(t,3*s,e,n)}return s&&s>0?X(n,0,n.length,s):n}const tt="none";class et{constructor(t){this.defaultOptions={maxRandomnessOffset:2,roughness:1,bowing:1,stroke:"#000",strokeWidth:1,curveTightness:0,curveFitting:.95,curveStepCount:9,fillStyle:"hachure",fillWeight:-1,hachureAngle:-41,hachureGap:-1,dashOffset:-1,dashGap:-1,zigzagOffset:-1,seed:0,disableMultiStroke:!1,disableMultiStrokeFill:!1,preserveVertices:!1,fillShapeRoughnessGain:.8},this.config=t||{},this.config.options&&(this.defaultOptions=this._o(this.config.options))}static newSeed(){return Math.floor(Math.random()*2**31)}_o(t){return t?Object.assign({},this.defaultOptions,t):this.defaultOptions}_d(t,e,s){return{shape:t,sets:e||[],options:s||this.defaultOptions}}line(t,e,s,n,o){const a=this._o(o);return this._d("line",[v(t,e,s,n,a)],a)}rectangle(t,e,s,n,o){const a=this._o(o),h=[],r=O(t,e,s,n,a);if(a.fill){const o=[[t,e],[t+s,e],[t+s,e+n],[t,e+n]];"solid"===a.fillStyle?h.push(I([o],a)):h.push(C([o],a))}return a.stroke!==tt&&h.push(r),this._d("rectangle",h,a)}ellipse(t,e,s,n,o){const a=this._o(o),h=[],r=T(s,n,a),i=D(t,e,a,r);if(a.fill)if("solid"===a.fillStyle){const s=D(t,e,a,r).opset;s.type="fillPath",h.push(s)}else h.push(C([i.estimatedPoints],a));return a.stroke!==tt&&h.push(i.opset),this._d("ellipse",h,a)}circle(t,e,s,n){const o=this.ellipse(t,e,s,s,n);return o.shape="circle",o}linearPath(t,e){const s=this._o(e);return this._d("linearPath",[S(t,!1,s)],s)}arc(t,e,s,n,o,a,h=!1,r){const i=this._o(r),c=[],l=A(t,e,s,n,o,a,h,!0,i);if(h&&i.fill)if("solid"===i.fillStyle){const h=Object.assign({},i);h.disableMultiStroke=!0;const r=A(t,e,s,n,o,a,!0,!1,h);r.type="fillPath",c.push(r)}else c.push(function(t,e,s,n,o,a,h){const r=t,i=e;let c=Math.abs(s/2),l=Math.abs(n/2);c+=G(.01*c,h),l+=G(.01*l,h);let u=o,p=a;for(;u<0;)u+=2*Math.PI,p+=2*Math.PI;p-u>2*Math.PI&&(u=0,p=2*Math.PI);const f=(p-u)/h.curveStepCount,d=[];for(let t=u;t<=p;t+=f)d.push([r+c*Math.cos(t),i+l*Math.sin(t)]);return d.push([r+c*Math.cos(p),i+l*Math.sin(p)]),d.push([r,i]),C([d],h)}(t,e,s,n,o,a,i));return i.stroke!==tt&&c.push(l),this._d("arc",c,i)}curve(t,e){const s=this._o(e),n=[],o=L(t,s);if(s.fill&&s.fill!==tt)if("solid"===s.fillStyle){const e=L(t,Object.assign(Object.assign({},s),{disableMultiStroke:!0,roughness:s.roughness?s.roughness+s.fillShapeRoughnessGain:0}));n.push({type:"fillPath",ops:this._mergedShape(e.ops)})}else{const e=[],o=t;if(o.length){const t="number"==typeof o[0][0]?[o]:o;for(const n of t)n.length<3?e.push(...n):3===n.length?e.push(...Y(H([n[0],n[0],n[1],n[2]]),10,(1+s.roughness)/2)):e.push(...Y(H(n),10,(1+s.roughness)/2))}e.length&&n.push(C([e],s))}return s.stroke!==tt&&n.push(o),this._d("curve",n,s)}polygon(t,e){const s=this._o(e),n=[],o=S(t,!0,s);return s.fill&&("solid"===s.fillStyle?n.push(I([t],s)):n.push(C([t],s))),s.stroke!==tt&&n.push(o),this._d("polygon",n,s)}path(t,e){const s=this._o(e),n=[];if(!t)return this._d("path",n,s);t=(t||"").replace(/\n/g," ").replace(/(-\s)/g,"-").replace("/(ss)/g"," ");const o=s.fill&&"transparent"!==s.fill&&s.fill!==tt,a=s.stroke!==tt,h=!!(s.simplification&&s.simplification<1),r=function(t,e,s){const n=m(y(b(t))),o=[];let a=[],h=[0,0],r=[];const i=()=>{r.length>=4&&a.push(...Y(r,e)),r=[]},c=()=>{i(),a.length&&(o.push(a),a=[])};for(const{key:t,data:e}of n)switch(t){case"M":c(),h=[e[0],e[1]],a.push(h);break;case"L":i(),a.push([e[0],e[1]]);break;case"C":if(!r.length){const t=a.length?a[a.length-1]:h;r.push([t[0],t[1]])}r.push([e[0],e[1]]),r.push([e[2],e[3]]),r.push([e[4],e[5]]);break;case"Z":i(),a.push([h[0],h[1]])}if(c(),!s)return o;const l=[];for(const t of o){const e=U(t,s);e.length&&l.push(e)}return l}(t,1,h?4-4*(s.simplification||1):(1+s.roughness)/2),i=_(t,s);if(o)if("solid"===s.fillStyle)if(1===r.length){const e=_(t,Object.assign(Object.assign({},s),{disableMultiStroke:!0,roughness:s.roughness?s.roughness+s.fillShapeRoughnessGain:0}));n.push({type:"fillPath",ops:this._mergedShape(e.ops)})}else n.push(I(r,s));else n.push(C(r,s));return a&&(h?r.forEach((t=>{n.push(S(t,!1,s))})):n.push(i)),this._d("path",n,s)}opsToPath(t,e){let s="";for(const n of t.ops){const t="number"==typeof e&&e>=0?n.data.map((t=>+t.toFixed(e))):n.data;switch(n.op){case"move":s+=`M${t[0]} ${t[1]} `;break;case"bcurveTo":s+=`C${t[0]} ${t[1]}, ${t[2]} ${t[3]}, ${t[4]} ${t[5]} `;break;case"lineTo":s+=`L${t[0]} ${t[1]} `}}return s.trim()}toPaths(t){const e=t.sets||[],s=t.options||this.defaultOptions,n=[];for(const t of e){let e=null;switch(t.type){case"path":e={d:this.opsToPath(t),stroke:s.stroke,strokeWidth:s.strokeWidth,fill:tt};break;case"fillPath":e={d:this.opsToPath(t),stroke:tt,strokeWidth:0,fill:s.fill||tt};break;case"fillSketch":e=this.fillSketch(t,s)}e&&n.push(e)}return n}fillSketch(t,e){let s=e.fillWeight;return s<0&&(s=e.strokeWidth/2),{d:this.opsToPath(t),stroke:e.fill||tt,strokeWidth:s,fill:tt}}_mergedShape(t){return t.filter(((t,e)=>0===e||"move"!==t.op))}}class st{constructor(t,e){this.canvas=t,this.ctx=this.canvas.getContext("2d"),this.gen=new et(e)}draw(t){const e=t.sets||[],s=t.options||this.getDefaultOptions(),n=this.ctx,o=t.options.fixedDecimalPlaceDigits;for(const a of e)switch(a.type){case"path":n.save(),n.strokeStyle="none"===s.stroke?"transparent":s.stroke,n.lineWidth=s.strokeWidth,s.strokeLineDash&&n.setLineDash(s.strokeLineDash),s.strokeLineDashOffset&&(n.lineDashOffset=s.strokeLineDashOffset),this._drawToContext(n,a,o),n.restore();break;case"fillPath":{n.save(),n.fillStyle=s.fill||"";const e="curve"===t.shape||"polygon"===t.shape||"path"===t.shape?"evenodd":"nonzero";this._drawToContext(n,a,o,e),n.restore();break}case"fillSketch":this.fillSketch(n,a,s)}}fillSketch(t,e,s){let n=s.fillWeight;n<0&&(n=s.strokeWidth/2),t.save(),s.fillLineDash&&t.setLineDash(s.fillLineDash),s.fillLineDashOffset&&(t.lineDashOffset=s.fillLineDashOffset),t.strokeStyle=s.fill||"",t.lineWidth=n,this._drawToContext(t,e,s.fixedDecimalPlaceDigits),t.restore()}_drawToContext(t,e,s,n="nonzero"){t.beginPath();for(const n of e.ops){const e="number"==typeof s&&s>=0?n.data.map((t=>+t.toFixed(s))):n.data;switch(n.op){case"move":t.moveTo(e[0],e[1]);break;case"bcurveTo":t.bezierCurveTo(e[0],e[1],e[2],e[3],e[4],e[5]);break;case"lineTo":t.lineTo(e[0],e[1])}}"fillPath"===e.type?t.fill(n):t.stroke()}get generator(){return this.gen}getDefaultOptions(){return this.gen.defaultOptions}line(t,e,s,n,o){const a=this.gen.line(t,e,s,n,o);return this.draw(a),a}rectangle(t,e,s,n,o){const a=this.gen.rectangle(t,e,s,n,o);return this.draw(a),a}ellipse(t,e,s,n,o){const a=this.gen.ellipse(t,e,s,n,o);return this.draw(a),a}circle(t,e,s,n){const o=this.gen.circle(t,e,s,n);return this.draw(o),o}linearPath(t,e){const s=this.gen.linearPath(t,e);return this.draw(s),s}polygon(t,e){const s=this.gen.polygon(t,e);return this.draw(s),s}arc(t,e,s,n,o,a,h=!1,r){const i=this.gen.arc(t,e,s,n,o,a,h,r);return this.draw(i),i}curve(t,e){const s=this.gen.curve(t,e);return this.draw(s),s}path(t,e){const s=this.gen.path(t,e);return this.draw(s),s}}const nt="http://www.w3.org/2000/svg";class ot{constructor(t,e){this.svg=t,this.gen=new et(e)}draw(t){const e=t.sets||[],s=t.options||this.getDefaultOptions(),n=this.svg.ownerDocument||window.document,o=n.createElementNS(nt,"g"),a=t.options.fixedDecimalPlaceDigits;for(const h of e){let e=null;switch(h.type){case"path":e=n.createElementNS(nt,"path"),e.setAttribute("d",this.opsToPath(h,a)),e.setAttribute("stroke",s.stroke),e.setAttribute("stroke-width",s.strokeWidth+""),e.setAttribute("fill","none"),s.strokeLineDash&&e.setAttribute("stroke-dasharray",s.strokeLineDash.join(" ").trim()),s.strokeLineDashOffset&&e.setAttribute("stroke-dashoffset",`${s.strokeLineDashOffset}`);break;case"fillPath":e=n.createElementNS(nt,"path"),e.setAttribute("d",this.opsToPath(h,a)),e.setAttribute("stroke","none"),e.setAttribute("stroke-width","0"),e.setAttribute("fill",s.fill||""),"curve"!==t.shape&&"polygon"!==t.shape||e.setAttribute("fill-rule","evenodd");break;case"fillSketch":e=this.fillSketch(n,h,s)}e&&o.appendChild(e)}return o}fillSketch(t,e,s){let n=s.fillWeight;n<0&&(n=s.strokeWidth/2);const o=t.createElementNS(nt,"path");return o.setAttribute("d",this.opsToPath(e,s.fixedDecimalPlaceDigits)),o.setAttribute("stroke",s.fill||""),o.setAttribute("stroke-width",n+""),o.setAttribute("fill","none"),s.fillLineDash&&o.setAttribute("stroke-dasharray",s.fillLineDash.join(" ").trim()),s.fillLineDashOffset&&o.setAttribute("stroke-dashoffset",`${s.fillLineDashOffset}`),o}get generator(){return this.gen}getDefaultOptions(){return this.gen.defaultOptions}opsToPath(t,e){return this.gen.opsToPath(t,e)}line(t,e,s,n,o){const a=this.gen.line(t,e,s,n,o);return this.draw(a)}rectangle(t,e,s,n,o){const a=this.gen.rectangle(t,e,s,n,o);return this.draw(a)}ellipse(t,e,s,n,o){const a=this.gen.ellipse(t,e,s,n,o);return this.draw(a)}circle(t,e,s,n){const o=this.gen.circle(t,e,s,n);return this.draw(o)}linearPath(t,e){const s=this.gen.linearPath(t,e);return this.draw(s)}polygon(t,e){const s=this.gen.polygon(t,e);return this.draw(s)}arc(t,e,s,n,o,a,h=!1,r){const i=this.gen.arc(t,e,s,n,o,a,h,r);return this.draw(i)}curve(t,e){const s=this.gen.curve(t,e);return this.draw(s)}path(t,e){const s=this.gen.path(t,e);return this.draw(s)}}return{canvas:(t,e)=>new st(t,e),svg:(t,e)=>new ot(t,e),generator:t=>new et(t),newSeed:()=>et.newSeed()}}();
+</script>
+<style>
+  :root { --bg: #fff; --ink: #0b0b0c; --ink2: #55555a; --mute: #8a8a8e; --line: #ececec; --soft: #f4f4f5; --acc: #2f4bff; --acc-soft: #eef0ff; --y: #ffd84a; --red: #e2492f; --hand: "LXGW WenKai Screen", "Noto Sans SC", serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: #f1f1ef; color: var(--ink); font-family: Geist, "Noto Sans SC", sans-serif; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  /* 手画线三版轮换：每 140ms 换一版，像逐帧手绘 */
+  body[data-f="0"] .v1, body[data-f="0"] .v2, body[data-f="1"] .v0, body[data-f="1"] .v2, body[data-f="2"] .v0, body[data-f="2"] .v1 { display: none; }
+  svg.drawing .v1, svg.drawing .v2 { display: none !important; }
+  svg.drawing .v0 { display: inline !important; }
+
+  /* ── 对比页外壳 ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+  .ph1 { font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+  .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+  .tab { padding: 10px 12px; border-radius: 14px; background: #fff; text-align: left; border: 1.5px solid transparent; }
+  .tab b { display: block; font-size: 14px; } .tab small { display: block; margin-top: 2px; color: var(--mute); font-size: 12px; }
+  .tab.on { border-color: var(--ink); }
+  .idea { margin-top: 12px; font-size: 14px; line-height: 1.65; color: var(--ink2); }
+  .ctl { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 12px; }
+  .ctl .g { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; color: var(--mute); }
+  .ctl button { height: 32px; padding: 0 12px; border-radius: 16px; background: #fff; border: 1px solid #e0e0e0; font-size: 13px; color: var(--ink); }
+  .ctl button:active { transform: scale(.96); }
+  .phones { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; margin-top: 20px; }
+  .ph > small { display: block; text-align: center; margin-bottom: 10px; color: var(--mute); font-size: 12px; }
+  .phone { position: relative; width: 360px; height: 740px; border-radius: 42px; background: #fff; overflow: hidden; box-shadow: 0 0 0 8px #141414, 0 24px 60px rgba(0,0,0,.18); display: flex; flex-direction: column; }
+  @media (max-width: 420px) { .tabs { grid-template-columns: 1fr 1fr; } .phone { width: calc(100vw - 48px); } }
+
+  /* ── App 里的样子（照着现在的学习 App） ── */
+  .sb { flex: none; height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 4px 26px 0; font-size: 14px; font-weight: 600; }
+  .sb i { width: 24px; height: 11px; border: 1.5px solid var(--ink); border-radius: 3.5px; position: relative; }
+  .sb i::after { content: ""; position: absolute; inset: 1.5px 6px 1.5px 1.5px; background: var(--ink); border-radius: 1.5px; }
+  .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 16px 40px; scrollbar-width: none; position: relative; }
+  .scroll::-webkit-scrollbar { display: none; }
+  .top { position: relative; display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 2px 8px; }
+  .top.b { padding-top: 50px; }
+  .tl { position: relative; min-width: 0; }
+  h1.big { position: relative; display: inline-flex; font-size: 54px; font-weight: 900; letter-spacing: -.045em; line-height: .98; }
+  .acts { display: flex; align-items: center; gap: 8px; margin-top: 4px; position: relative; z-index: 2; }
+  .gear { width: 36px; height: 36px; display: grid; place-items: center; } .gear svg { width: 22px; height: 22px; }
+  .pill { height: 42px; padding: 0 15px; border-radius: 21px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .pill svg { width: 15px; height: 15px; }
+  .live { margin-top: 10px; display: flex; align-items: center; gap: 8px; font: 12px "Geist Mono", "Noto Sans SC", monospace; color: var(--mute); }
+  .live b { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+  .sect { display: flex; align-items: center; gap: 10px; margin: 26px 2px 4px; font: 11.5px "Geist Mono", "Noto Sans SC", monospace; color: var(--mute); letter-spacing: .08em; }
+  .sect::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .hrow { display: flex; align-items: baseline; gap: 8px; margin: 12px 2px 16px; }
+  .num-xl { font-size: 84px; font-weight: 800; letter-spacing: -.06em; line-height: .8; }
+  .unit { font-size: 18px; font-weight: 700; color: var(--mute); }
+  .todos { display: flex; flex-direction: column; gap: 10px; }
+  .todo { display: flex; align-items: center; gap: 12px; padding: 15px 10px 15px 20px; border-radius: 28px; border: 1.5px solid var(--line); text-align: left; background: #fff; }
+  .todo.first { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .todo div { flex: 1; min-width: 0; }
+  .todo b { display: block; font-size: 17px; font-weight: 800; }
+  .todo span { display: block; margin-top: 3px; font-size: 13.5px; color: var(--ink2); line-height: 1.45; }
+  .todo.first span { color: rgba(255,255,255,.7); }
+  .todo i { width: 46px; height: 46px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; flex: none; }
+  .todo.first i { background: #fff; color: var(--ink); }
+  .todo i svg { width: 18px; height: 18px; }
+  .dn { font-size: 24px; font-weight: 900; margin: 12px 2px 0; }
+  .dp { margin: 8px 2px 0; font-size: 14px; color: var(--ink2); line-height: 1.6; }
+  .it { display: grid; grid-template-columns: 50px 1fr 14px; gap: 6px; padding: 16px 2px; border-bottom: 1px solid var(--line); }
+  .it .no { font-size: 28px; font-weight: 700; letter-spacing: -.05em; color: #c8c8cc; line-height: 1; }
+  .it h3 { font-size: 18px; font-weight: 800; line-height: 1.3; }
+  .it .sub { margin-top: 2px; font-size: 13px; color: var(--ink2); }
+  .meta { margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--mute); }
+  .bar { width: 90px; height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--ink); transform-origin: left; }
+  .it .chev { color: #c8c8cc; font-size: 20px; line-height: 1; }
+
+  /* 对话页 */
+  .dtop { flex: none; display: flex; align-items: center; gap: 4px; padding: 2px 12px 10px 4px; border-bottom: 1px solid var(--line); }
+  .dtop h1 { font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dtop small { display: block; margin-top: 1px; font-size: 11.5px; color: var(--mute); }
+  .dtop > div { min-width: 0; }
+  .back { width: 40px; height: 40px; display: grid; place-items: center; flex: none; } .back svg { width: 22px; height: 22px; }
+  .cs { padding-top: 14px; }
+  .ans { font-size: 15.5px; line-height: 1.7; margin: 4px 2px 14px; }
+  .q { border: 1.5px solid var(--line); border-radius: 22px; padding: 16px 12px 12px; box-shadow: 0 0 0 4px var(--acc-soft); }
+  .q h4 { font-size: 16px; font-weight: 700; line-height: 1.5; margin: 0 4px 6px; }
+  .op { position: relative; width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px; border-radius: 16px; border: 1.5px solid var(--line); margin-top: 8px; text-align: left; font-size: 15px; }
+  .op b { width: 24px; height: 24px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font: 600 12px "Geist Mono", monospace; flex: none; }
+  .op.ok { border-color: var(--ink); } .op.ok b { background: var(--ink); color: #fff; }
+  .op.bad { color: var(--mute); }
+  .op .mk { position: absolute; right: 10px; top: 50%; width: 30px; height: 30px; margin-top: -15px; overflow: visible; pointer-events: none; }
+  .waitline { display: flex; align-items: center; gap: 8px; margin: 16px 2px 0; font-size: 14px; color: var(--mute); }
+  .dots b { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--mute); margin-left: 3px; animation: dot 1.2s infinite; }
+  .dots b:nth-child(2) { animation-delay: .2s; } .dots b:nth-child(3) { animation-delay: .4s; }
+  @keyframes dot { 0%, 60%, 100% { transform: none; opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
+  .fb { display: flex; gap: 10px; align-items: flex-start; margin: 16px 2px 0; }
+  .fb p { flex: 1; font-size: 15px; line-height: 1.7; padding-top: 6px; }
+  .score { position: relative; margin-top: 6px; border-radius: 26px; border: 1.5px solid var(--line); padding: 18px 18px 16px; }
+  .sc-top { display: flex; align-items: center; gap: 14px; min-height: 84px; }
+  .sc-n { font-size: 58px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+  .sc-n small { font-size: 18px; color: var(--mute); font-weight: 700; margin-left: 3px; letter-spacing: 0; }
+  .sc-t { margin-top: 10px; font-size: 14px; color: var(--ink2); }
+  .score ul { list-style: none; margin-top: 8px; font-size: 14px; line-height: 2; }
+  .score li::before { content: "✓"; display: inline-block; width: 20px; font-weight: 700; }
+  .score li.n { color: var(--mute); } .score li.n::before { content: "–"; }
+  .sc-b { margin-top: 12px; height: 44px; width: 100%; border-radius: 22px; background: var(--ink); color: #fff; font-weight: 700; font-size: 14.5px; }
+  .comp { flex: none; margin: 8px 12px 14px; height: 52px; border-radius: 26px; border: 1.5px solid var(--line); display: flex; align-items: center; padding: 0 6px 0 18px; color: var(--mute); font-size: 14.5px; }
+  .comp span { flex: 1; }
+  .comp i { width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; } .comp i svg { width: 18px; height: 18px; }
+
+  /* ── 角色 ── */
+  .m { position: relative; flex: none; cursor: pointer; }
+  .m > svg { width: 100%; height: 100%; overflow: visible; display: block; }
+  .mh.a { position: absolute; right: -50px; bottom: 2px; transform: rotate(-10deg); z-index: 3; }
+  .mh.b { position: absolute; right: -6px; top: -48px; z-index: 3; }
+  .mh.c { position: absolute; z-index: 3; transform: translate(-50%, -86%); transition: left .3s cubic-bezier(.3,0,.2,1), top .3s cubic-bezier(.3,0,.2,1); }
+  .mh.d { position: absolute; right: 4px; top: 70px; transform: rotate(7deg); z-index: 3; }
+  .m.idle-bob > svg { animation: bob 2.6s ease-in-out infinite; }
+  .m.sway > svg { animation: sway 3.2s ease-in-out infinite; transform-origin: 50% 10%; }
+  .m.think > svg { animation: bob 1.3s ease-in-out infinite; }
+  .m.sleep > svg { animation: breathe 3s ease-in-out infinite; transform-origin: 50% 90%; }
+  .m.nod > svg { animation: nod .9s cubic-bezier(.3,0,.2,1); transform-origin: 50% 85%; }
+  .m.hop > svg { animation: hop .7s cubic-bezier(.3,0,.2,1); transform-origin: 50% 100%; }
+  .m.tilt > svg { animation: tilt 1s cubic-bezier(.3,0,.2,1) forwards; transform-origin: 50% 80%; }
+  .m.party > svg { animation: party 1.2s cubic-bezier(.3,0,.2,1); transform-origin: 50% 100%; }
+  @keyframes bob { 50% { transform: translateY(-5%) rotate(-3deg); } }
+  @keyframes sway { 50% { transform: rotate(-4deg); } }
+  @keyframes breathe { 50% { transform: scale(1.05, .95); } }
+  @keyframes nod { 0%, 100% { transform: none; } 20% { transform: rotate(-9deg) translateY(3%); } 45% { transform: rotate(6deg); } 70% { transform: rotate(-4deg); } }
+  @keyframes hop { 0% { transform: none; } 18% { transform: scale(1.12, .86); } 45% { transform: translateY(-28%) scale(.94, 1.08); } 75% { transform: scale(1.08, .92); } 100% { transform: none; } }
+  @keyframes tilt { 0% { transform: none; } 30% { transform: rotate(15deg); } 55% { transform: rotate(9deg); } 100% { transform: rotate(11deg); } }
+  @keyframes party { 0% { transform: none; } 15% { transform: scale(1.15, .82); } 40% { transform: translateY(-45%) rotate(-12deg); } 60% { transform: translateY(-45%) rotate(14deg); } 85% { transform: scale(1.1, .9); } 100% { transform: none; } }
+  .wing { transform-box: fill-box; transform-origin: 85% 50%; }
+  .m.flap .wing { animation: flap .14s linear infinite alternate; }
+  @keyframes flap { to { transform: rotate(-42deg); } }
+  .zz { position: absolute; right: -8%; top: -14%; font: 700 15px var(--hand); color: var(--ink); pointer-events: none; }
+  .zz i { position: absolute; font-style: normal; opacity: 0; animation: zz 2.4s linear infinite; }
+  .zz i:nth-child(2) { animation-delay: .8s; } .zz i:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes zz { 0% { opacity: 0; transform: translate(0, 0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(16px, -28px) scale(1.25); } }
+  .bub { position: absolute; z-index: 40; padding: 8px 13px; font: 14px/1.4 var(--hand); white-space: nowrap; pointer-events: none; }
+  .bub svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; z-index: -1; }
+  .cf { position: absolute; width: 18px; height: 18px; pointer-events: none; z-index: 50; overflow: visible; }
+  svg.trail { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+
+  /* C 描红 */
+  .hz { display: flex; gap: 4px; }
+  .hz svg { width: 66px; height: 66px; display: block; }
+  .seal { position: absolute; left: 148px; top: 12px; width: 38px; height: 38px; border-radius: 6px; background: var(--red); color: #fff; font: 15px/1.05 var(--hand); display: grid; place-items: center; text-align: center; transform: rotate(-8deg); opacity: .92; box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); padding-top: 1px; }
+  .seal.big { position: static; width: 64px; height: 64px; font-size: 22px; border-radius: 9px; }
+
+  /* D 便利贴手写 */
+  .dd { font: 14px var(--hand); color: var(--mute); }
+  .hand { display: flex; align-items: baseline; gap: 2px; margin-top: 4px; font: 42px/1.25 var(--hand); white-space: nowrap; }
+  .n { position: relative; display: inline-block; padding: 0 8px; }
+  .n.struck { color: #b9b9bd; font-size: .8em; padding: 0 4px; }
+  .n > svg, .ck svg, .hl > svg { position: absolute; overflow: visible; pointer-events: none; }
+  .n > svg { inset: -6px -8px; width: calc(100% + 16px); height: calc(100% + 12px); }
+  .ck { position: relative; display: inline-block; width: 40px; height: 34px; }
+  .ck svg { inset: 0; width: 100%; height: 100%; }
+  .hsub { margin-top: 4px; font: 16px var(--hand); color: var(--ink2); }
+  .hl { position: relative; z-index: 0; padding: 0 3px; }
+  .hl > svg { inset: 2px -2px -2px; width: calc(100% + 4px); height: calc(100% - 0px); z-index: -1; }
+  .sc-n.hand2 { font: 52px/1 var(--hand); position: relative; padding: 0 8px; }
+  .sc-n.hand2 > svg { position: absolute; inset: -8px -10px; width: calc(100% + 20px); height: calc(100% + 16px); overflow: visible; }
+</style>
+</head>
+<body data-f="0">
+<div class="page">
+  <div class="ph1">学习 App · 角色和左上角大字</div>
+  <div class="tabs" id="tabs"></div>
+  <p class="idea" id="idea"></p>
+  <div class="ctl">
+    <div class="g">首页 <button id="adv">学完一件</button><button id="reset">重来</button> 点角色试试</div>
+    <div class="g">上课 <button data-c="think">在想</button><button data-c="right">答对</button><button data-c="wrong">答错</button><button data-c="done">学完一节</button></div>
+  </div>
+  <div class="phones">
+    <div class="ph"><small>首页</small><div class="phone" id="home"></div></div>
+    <div class="ph"><small>上课</small><div class="phone" id="chat"></div></div>
+  </div>
+</div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg", INK = "#1d1c1a", Y = "#ffd84a", RED = "#e2492f", ACC = "#2f4bff";
+const HZ = {"学": {"strokes": ["M 311 681 Q 332 656 354 626 Q 364 611 380 610 Q 390 609 397 621 Q 404 634 399 664 Q 395 694 313 727 Q 298 733 292 731 Q 288 728 287 715 Q 288 705 311 681 Z", "M 456 744 Q 475 717 495 685 Q 504 672 517 669 Q 526 668 533 677 Q 540 689 539 715 Q 536 745 462 785 Q 450 792 444 791 Q 440 788 438 777 Q 439 767 456 744 Z", "M 669 770 Q 642 724 586 650 Q 580 643 587 635 Q 594 634 603 639 Q 700 721 749 752 Q 768 759 763 770 Q 756 786 734 806 Q 712 824 688 825 Q 672 824 674 802 Q 678 787 669 770 Z", "M 241 550 Q 231 569 222 576 Q 203 589 201 564 Q 207 527 148 466 Q 129 445 155 387 Q 170 360 190 388 Q 217 454 246 522 C 251 533 251 533 241 550 Z", "M 246 522 Q 276 504 310 515 Q 472 560 708 577 Q 745 580 761 577 Q 776 570 775 563 Q 775 562 727 483 Q 720 470 725 464 Q 732 460 750 470 Q 813 507 862 516 Q 904 526 903 536 Q 902 546 832 605 Q 808 626 745 613 Q 598 600 365 564 Q 307 555 248 551 Q 244 551 241 550 C 211 547 218 534 246 522 Z", "M 516 320 Q 519 321 599 382 Q 636 410 663 419 Q 682 425 676 441 Q 673 457 610 492 Q 592 502 570 494 Q 510 472 420 447 Q 396 440 339 442 Q 317 443 324 423 Q 331 411 350 400 Q 378 384 411 402 Q 433 411 546 449 Q 559 455 570 448 Q 582 441 576 427 Q 546 382 508 326 C 493 304 493 304 516 320 Z", "M 538 295 Q 529 310 516 320 L 508 326 Q 502 330 498 332 Q 488 339 483 331 Q 479 327 486 314 Q 490 304 495 290 L 506 247 Q 518 163 508 105 Q 502 68 492 60 Q 489 57 408 73 Q 398 76 392 72 Q 388 71 402 59 Q 454 11 482 -28 Q 498 -46 516 -37 Q 538 -25 555 27 Q 579 117 557 250 L 538 295 Z", "M 557 250 Q 701 269 878 253 Q 902 250 908 259 Q 915 272 903 284 Q 875 312 831 332 Q 816 338 790 330 Q 742 321 538 295 L 495 290 Q 384 281 328 274 Q 264 264 170 264 Q 157 264 155 253 Q 154 240 173 226 Q 189 213 220 201 Q 232 197 249 205 Q 265 211 332 221 Q 408 239 506 247 L 557 250 Z"], "medians": [[[296, 725], [307, 710], [358, 671], [381, 628]], [[447, 782], [500, 728], [518, 686]], [[690, 808], [712, 774], [619, 668], [590, 643]], [[212, 568], [221, 546], [220, 525], [175, 444], [171, 391]], [[245, 544], [279, 532], [586, 582], [759, 597], [800, 586], [821, 553], [730, 469]], [[334, 430], [355, 420], [383, 417], [557, 471], [593, 467], [617, 442], [615, 437], [577, 388], [514, 326]], [[491, 326], [514, 296], [534, 237], [540, 136], [528, 53], [504, 17], [396, 71]], [[168, 251], [231, 233], [449, 265], [815, 296], [896, 268]]], "radStrokes": [5, 6, 7]}, "习": {"strokes": ["M 667 715 Q 686 690 685 633 Q 682 455 663 341 Q 644 245 617 177 Q 604 149 591 143 Q 582 139 471 169 Q 440 178 438 173 Q 434 166 453 152 Q 519 103 556 58 Q 577 24 597 29 Q 651 44 698 183 Q 726 277 748 585 Q 752 666 775 692 Q 796 716 770 736 Q 688 791 648 778 Q 425 724 266 713 Q 256 714 254 706 Q 251 697 264 691 Q 315 666 352 677 Q 398 692 616 726 Q 653 730 667 715 Z", "M 336 555 Q 363 533 391 506 Q 406 493 421 494 Q 431 495 437 508 Q 441 524 431 553 Q 425 572 394 586 Q 324 610 308 603 Q 304 599 305 586 Q 309 576 336 555 Z", "M 213 293 Q 198 289 199 275 Q 200 259 213 252 Q 244 240 288 227 Q 301 226 313 240 Q 338 273 494 397 Q 516 413 530 432 Q 543 444 541 455 Q 534 459 519 454 Q 407 387 263 310 Q 245 300 213 293 Z"], "medians": [[[264, 703], [331, 696], [645, 752], [688, 742], [725, 706], [695, 342], [678, 250], [644, 145], [615, 105], [595, 92], [481, 154], [467, 155], [442, 169]], [[313, 597], [400, 543], [418, 514]], [[215, 277], [242, 271], [284, 273], [535, 450]]], "radStrokes": [1, 2]}};
+const $ = (s, r = document) => r.querySelector(s);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let F = 0;
+setInterval(() => { F = (F + 1) % 3; document.body.dataset.f = F; }, 140);
+
+const ICON = {
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+};
+
+function mk(tag, attrs = {}, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function grp(...nodes) { const g = mk("g"); nodes.flat().forEach((n) => n && g.appendChild(n)); return g; }
+// 在 svg 里画三版手画线（三个 seed），轮换着抖；drawIn>0 时先一笔笔画出来
+function sketch(svg, make, drawIn = 0) {
+  svg.querySelectorAll(":scope > .v0, :scope > .v1, :scope > .v2").forEach((g) => g.remove());
+  const rc = rough.svg(svg), gs = [];
+  for (let k = 0; k < 3; k++) { const g = make(rc, 5 + k * 23); g.classList.add("v" + k); svg.appendChild(g); gs.push(g); }
+  if (drawIn) {
+    svg.classList.add("drawing");
+    const ps = [...gs[0].querySelectorAll("path")];
+    ps.forEach((p) => { const L = p.getTotalLength() + 2; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
+    requestAnimationFrame(() => requestAnimationFrame(() => ps.forEach((p, i) => { p.style.transition = `stroke-dashoffset ${drawIn}ms cubic-bezier(.5,0,.3,1) ${i * 50}ms`; p.style.strokeDashoffset = 0; })));
+    setTimeout(() => { svg.classList.remove("drawing"); ps.forEach((p) => { p.style.strokeDasharray = ""; p.style.strokeDashoffset = ""; p.style.transition = ""; }); }, drawIn + ps.length * 50 + 100);
+  }
+  return svg;
+}
+
+/* ── 角色怎么画（100×100 的画布） ── */
+const line = (s, w = 2.4, c = INK) => ({ seed: s, stroke: c, strokeWidth: w, roughness: 1.2, bowing: 1.3 });
+const hatch = (s, c = Y) => ({ seed: s, stroke: "none", fill: c, fillStyle: "hachure", hachureGap: 3, fillWeight: 2.4, hachureAngle: -42, roughness: 1.5 });
+const dot = (s, c = INK) => ({ seed: s, stroke: c, strokeWidth: 0.8, fill: c, fillStyle: "solid", roughness: 0.4 });
+const LOOK = { think: [-2.5, -3], look: [1.6, 2.6] };
+function eyes(rc, s, cx, cy, gap, e, c = INK) {
+  const out = [], [dx, dy] = LOOK[e] || [0, 0];
+  for (const x of [cx - gap / 2, cx + gap / 2]) {
+    if (e === "happy" || e === "celebrate") out.push(rc.path(`M${x - 5} ${cy + 2} Q${x} ${cy - 6} ${x + 5} ${cy + 2}`, line(s, 2.6, c)));
+    else if (e === "sleep") out.push(rc.path(`M${x - 5} ${cy} Q${x} ${cy + 5} ${x + 5} ${cy}`, line(s, 2.4, c)));
+    else if (e === "blink") out.push(rc.line(x - 5, cy + 1, x + 5, cy + 1, line(s, 2.4, c)));
+    else out.push(rc.ellipse(x + dx, cy + dy, 9, 10.5, dot(s, c)));
+  }
+  return out;
+}
+function mouth(rc, s, cx, my, e, c = INK) {
+  const o = line(s, 2.4, c);
+  if (e === "celebrate") return rc.path(`M${cx - 10} ${my - 2} Q${cx} ${my + 13} ${cx + 10} ${my - 2} Z`, { ...dot(s, c), roughness: 0.8 });
+  if (e === "happy") return rc.path(`M${cx - 11} ${my - 2} Q${cx} ${my + 10} ${cx + 11} ${my - 2}`, o);
+  if (e === "wrong") return rc.path(`M${cx - 9} ${my + 2} Q${cx - 4.5} ${my - 2} ${cx} ${my + 2} Q${cx + 4.5} ${my + 6} ${cx + 9} ${my + 2}`, o);
+  if (e === "think") return rc.ellipse(cx + 5, my + 2, 6, 6, o);
+  if (e === "sleep") return rc.path(`M${cx - 5} ${my + 2} Q${cx} ${my + 4} ${cx + 5} ${my + 2}`, o);
+  return rc.path(`M${cx - 9} ${my - 1} Q${cx} ${my + 7} ${cx + 9} ${my - 1}`, o);
+}
+// 问号、想事的小泡泡、开心的小闪线
+function marks(rc, s, e, x, y) {
+  if (e === "wrong") return [rc.path(`M${x - 5} ${y} Q${x - 5} ${y - 8} ${x + 2} ${y - 8} Q${x + 9} ${y - 8} ${x + 8} ${y - 1} Q${x + 7} ${y + 4} ${x + 2} ${y + 6} L${x + 2} ${y + 11}`, line(s, 2.4)), rc.ellipse(x + 2, y + 17, 3.5, 3.5, dot(s))];
+  if (e === "think") return [rc.ellipse(x - 5, y + 12, 5, 5, line(s, 1.8)), rc.ellipse(x + 4, y + 1, 9, 9, line(s, 1.8))];
+  if (e === "happy" || e === "celebrate") return [rc.line(x - 2, y + 4, x + 6, y - 4, line(s, 2)), rc.line(x + 2, y + 11, x + 12, y + 9, line(s, 2)), rc.line(x - 9, y + 1, x - 9, y - 8, line(s, 2))];
+  return [];
+}
+const DRAW = {
+  // 小灯：气泡脸 + 耳机，和听会里那个一样
+  xwl(rc, s, e) {
+    const cx = 50, cy = 57, rx = 31, ry = 31, pts = [];
+    for (let a = 130; a <= 460; a += 15) { const r = (a * Math.PI) / 180; pts.push([cx + rx * Math.cos(r), cy + ry * Math.sin(r)]); }
+    const p0 = pts[0], p1 = pts[pts.length - 1];
+    return grp(
+      rc.ellipse(cx - 2, cy - 2, 55, 56, hatch(s)),
+      rc.curve(pts, line(s, 2.6)),
+      rc.linearPath([p1, [27, 98], p0], line(s, 2.6)),
+      rc.path("M16 56 C14 14 86 14 84 56", line(s, 2.8)),
+      rc.path("M21 52 C21 22 79 22 79 52", line(s, 1.5)),
+      rc.rectangle(9, 46, 11, 22, { ...line(s, 2.4), fill: "#fff", fillStyle: "solid" }),
+      rc.rectangle(80, 46, 11, 22, { ...line(s, 2.4), fill: "#fff", fillStyle: "solid" }),
+      eyes(rc, s, cx, 52, 20, e), mouth(rc, s, cx, 67, e), marks(rc, s, e, 90, 8));
+  },
+  // 练飞的小鸟：圆身子、一只眼、会扑腾的翅膀
+  bird(rc, s, e) {
+    const ex = 64, ey = 46;
+    let eye;
+    if (e === "happy" || e === "celebrate") eye = rc.path(`M${ex - 5} ${ey + 2} Q${ex} ${ey - 5} ${ex + 5} ${ey + 2}`, line(s, 2.6));
+    else if (e === "sleep" || e === "blink") eye = rc.path(`M${ex - 5} ${ey} Q${ex} ${ey + 4} ${ex + 5} ${ey}`, line(s, 2.4));
+    else { const [dx, dy] = LOOK[e] || [0, 0]; eye = rc.ellipse(ex + dx * 0.6, ey + dy * 0.6, 8, 9, dot(s)); }
+    const open = e === "celebrate" || e === "happy";
+    const wing = grp(rc.path("M30 64 Q34 52 50 60 Q44 74 30 64 Z", { ...line(s, 2.2), fill: "#fff", fillStyle: "solid" }));
+    wing.classList.add("wing");
+    return grp(
+      rc.ellipse(48, 58, 50, 50, hatch(s)),
+      rc.ellipse(50, 60, 54, 54, line(s, 2.6)),
+      rc.path("M46 34 Q47 25 53 27 M52 33 Q56 24 62 29", line(s, 2)),
+      rc.path("M24 54 L15 47 M23 59 L13 57", line(s, 2.2)),
+      open ? rc.linearPath([[76, 49], [87, 46], [77, 53], [86, 58], [76, 57]], line(s, 2.4)) : rc.linearPath([[76, 49], [87, 53], [76, 57]], line(s, 2.4)),
+      e === "wrong" ? rc.path("M58 38 L70 40", line(s, 2.2)) : null,
+      eye, wing,
+      rc.path("M44 86 L42 95 M37 95 L47 95 M56 86 L58 95 M53 95 L63 95", line(s, 2)),
+      marks(rc, s, e, 84, 10));
+  },
+  // 墨点：一滴墨，白眼睛
+  ink(rc, s, e) {
+    const W = "#fff";
+    const body = rc.path("M50 10 C57 26 84 36 84 60 C84 79 69 90 50 90 C31 90 16 79 16 60 C16 36 43 26 50 10 Z", { seed: s, stroke: INK, strokeWidth: 2, fill: INK, fillStyle: "solid", roughness: 1.1 });
+    const out = [body, rc.path("M27 54 Q28 44 35 38", line(s, 2, W))];
+    for (const x of [39, 61]) {
+      if (e === "happy" || e === "celebrate") out.push(rc.path(`M${x - 6} 58 Q${x} 50 ${x + 6} 58`, line(s, 2.6, W)));
+      else if (e === "sleep" || e === "blink") out.push(rc.path(`M${x - 6} 55 Q${x} 60 ${x + 6} 55`, line(s, 2.4, W)));
+      else { const [dx, dy] = LOOK[e] || [0, 0]; out.push(rc.ellipse(x, 55, 13, 14.5, dot(s, W)), rc.ellipse(x + dx * 0.8 + 1, 56 + dy * 0.8, 6, 7, dot(s, INK))); }
+    }
+    out.push(mouth(rc, s, 50, 70, e, W), ...marks(rc, s, e, 86, 6));
+    return grp(out);
+  },
+  // 便利贴：一张黄纸，顶上一截胶带，右下角折起来
+  note(rc, s, e) {
+    return grp(
+      rc.rectangle(18, 21, 64, 62, hatch(s)),
+      rc.path("M16 19 L84 20 L83 70 L69 85 L17 84 Z", line(s, 2.4)),
+      rc.path("M83 70 L71 71 L69 85", line(s, 2)),
+      rc.rectangle(37, 11, 26, 11, { seed: s, stroke: "#9b978d", strokeWidth: 1.3, fill: "#d9d5ca", fillStyle: "hachure", hachureGap: 2.4, fillWeight: 1.2, roughness: 1.2 }),
+      eyes(rc, s, 50, 46, 20, e), mouth(rc, s, 50, 60, e), marks(rc, s, e, 92, 4));
+  },
+};
+
+class Mascot {
+  constructor(host, kind, size) {
+    this.host = host; this.kind = kind; this.expr = "idle";
+    host.classList.add("m"); host.style.width = host.style.height = size + "px";
+    this.svg = mk("svg", { viewBox: "0 0 100 100" }, host);
+    this.draw();
+    const blink = () => {
+      if (!host.isConnected) return;
+      if (this.expr === "idle" || this.expr === "look") { const e = this.expr; this.paint("blink"); setTimeout(() => this.expr === e && this.paint(e), 150); }
+      setTimeout(blink, 2400 + Math.random() * 2800);
+    };
+    setTimeout(blink, 1200 + Math.random() * 1800);
+  }
+  paint(e) { this.svg.querySelectorAll("g").forEach((g) => g.parentNode === this.svg && g.remove()); const rc = rough.svg(this.svg); for (let k = 0; k < 3; k++) { const g = DRAW[this.kind](rc, 3 + k * 17, e); g.classList.add("v" + k); this.svg.appendChild(g); } }
+  draw() { this.paint(this.expr); }
+  set(e) { this.expr = e; this.draw(); this.sleep(e === "sleep"); return this; }
+  play(cls, ms) { const h = this.host; h.classList.remove(cls); void h.offsetWidth; h.classList.add(cls); clearTimeout(h["_" + cls]); if (ms) h["_" + cls] = setTimeout(() => h.classList.remove(cls), ms); return this; }
+  sleep(on) {
+    this.host.classList.toggle("sleep", on);
+    let z = this.host.querySelector(".zz");
+    if (on && !z) { z = document.createElement("div"); z.className = "zz"; z.innerHTML = "<i>z</i><i>z</i><i>Z</i>"; this.host.appendChild(z); }
+    if (!on && z) z.remove();
+  }
+}
+
+function bubble(anchor, text, root) {
+  root.querySelectorAll(".bub").forEach((b) => b.remove());
+  const b = document.createElement("div"); b.className = "bub"; b.innerHTML = `<svg></svg><span>${text}</span>`;
+  root.appendChild(b);
+  const ar = anchor.getBoundingClientRect(), rr = root.getBoundingClientRect(), w = b.offsetWidth, h = b.offsetHeight;
+  let x = ar.left - rr.left + ar.width / 2 - w / 2; x = Math.max(12, Math.min(rr.width - w - 12, x));
+  b.style.left = x + "px"; b.style.top = ar.bottom - rr.top + 8 + "px";
+  const svg = b.querySelector("svg"); svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  sketch(svg, (rc, s) => grp(rc.rectangle(2, 2, w - 4, h - 4, { seed: s, stroke: INK, strokeWidth: 1.8, roughness: 1.4, fill: "#fff", fillStyle: "solid" })));
+  b.animate([{ opacity: 0, transform: "translateY(-6px) scale(.9)" }, { opacity: 1, transform: "none" }], { duration: 280, easing: "cubic-bezier(.3,1.4,.5,1)" });
+  setTimeout(() => { b.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }).onfinish = () => b.remove(); }, 2600);
+}
+
+function confetti(root, x, y, n = 16) {
+  for (let i = 0; i < n; i++) {
+    const s = mk("svg", { viewBox: "0 0 20 20", class: "cf" }); root.appendChild(s);
+    const rc = rough.svg(s), t = i % 4;
+    s.appendChild(t === 0 ? rc.rectangle(4, 4, 12, 12, { seed: i + 1, stroke: INK, strokeWidth: 1.2, fill: Y, fillStyle: "hachure", hachureGap: 2.2, roughness: 1.4 })
+      : t === 1 ? rc.line(3, 17, 17, 3, { seed: i + 1, stroke: INK, strokeWidth: 2, roughness: 1.6 })
+      : t === 2 ? rc.ellipse(10, 10, 9, 9, { seed: i + 1, stroke: ACC, strokeWidth: 2 })
+      : rc.path("M2 10 Q6 4 10 10 T18 10", { seed: i + 1, stroke: INK, strokeWidth: 1.8, roughness: 1 }));
+    s.style.left = x - 9 + "px"; s.style.top = y - 9 + "px";
+    const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.6, d = 60 + Math.random() * 90, dx = Math.cos(a) * d, dy = Math.sin(a) * d, r = (Math.random() - 0.5) * 540;
+    s.animate([{ transform: "translate(0,0) scale(.3)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(1) rotate(${r / 2}deg)`, opacity: 1, offset: 0.45 }, { transform: `translate(${dx * 1.15}px,${dy + 130}px) scale(.9) rotate(${r}deg)`, opacity: 0 }],
+      { duration: 1300 + Math.random() * 400, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }).onfinish = () => s.remove();
+  }
+}
+const centerIn = (el, root) => { const a = el.getBoundingClientRect(), r = root.getBoundingClientRect(); return [a.left - r.left + a.width / 2, a.top - r.top + a.height / 2]; };
+
+/* ── 描红：「学习」两个字的笔画（Make Me a Hanzi 的数据），写到第几笔跟着今天的进度 ── */
+function hanzi(box, rel) {
+  const S = 66, strokes = [];
+  for (const ch of ["学", "习"]) {
+    const svg = mk("svg", { viewBox: "0 0 1024 1024" }, box);
+    mk("rect", { x: 10, y: 10, width: 1004, height: 1004, fill: "none", stroke: "#e4e4e7", "stroke-width": 12 }, svg);
+    mk("path", { d: "M512 10V1014M10 512H1014", stroke: "#ececef", "stroke-width": 9, "stroke-dasharray": "30 24" }, svg);
+    const g = mk("g", { transform: "translate(0,900) scale(1,-1)" }, svg);
+    HZ[ch].strokes.forEach((d, i) => {
+      const id = `hz${ch.charCodeAt(0)}_${i}_${Math.random().toString(36).slice(2, 7)}`;
+      mk("path", { d }, mk("clipPath", { id }, g));
+      mk("path", { d, fill: "#e8e8eb" }, g);
+      const m = HZ[ch].medians[i];
+      const ink = mk("path", { d: "M" + m.map((q) => q.join(" ")).join(" L"), fill: "none", stroke: INK, "stroke-width": 170, "stroke-linecap": "round", "stroke-linejoin": "round", "clip-path": `url(#${id})` }, g);
+      strokes.push({ ink, m, svg });
+    });
+  }
+  strokes.forEach((s) => { s.L = s.ink.getTotalLength() + 220; s.ink.style.strokeDasharray = s.L; s.ink.style.strokeDashoffset = s.L; });
+  const pt = (k, end) => {
+    const s = strokes[k], [x, y] = end ? s.m[s.m.length - 1] : s.m[0], r = s.svg.getBoundingClientRect(), br = rel.getBoundingClientRect();
+    return [r.left - br.left + (x / 1024) * S, r.top - br.top + ((900 - y) / 1024) * S];
+  };
+  return {
+    n: strokes.length,
+    at: (n) => (n ? pt(n - 1, true) : pt(0, false)),
+    set(n) { strokes.forEach((s, i) => (s.ink.style.strokeDashoffset = i < n ? 0 : s.L)); },
+    async write(from, to, each, onStroke) {
+      for (let k = from; k < to; k++) {
+        const s = strokes[k];
+        s.ink.style.transition = `stroke-dashoffset ${each}ms cubic-bezier(.45,0,.3,1)`; s.ink.style.strokeDashoffset = 0;
+        onStroke?.(k + 1); await sleep(each + 30); s.ink.style.transition = "";
+      }
+    },
+  };
+}
+
+/* ── 数据：四个方案用同一份 ── */
+const TASKS = [{ cat: "AI 中转站", t: "学 01 网关到底替团队挡了什么", min: 15 }, { cat: "算力", t: "学 01 训推平台全景：从训练到上线的链路", min: 15 }];
+const CATS = [["AI 中转站", "AI 中转站：怎么给团队搭一层稳的模型网关", "0 / 40 节", 0], ["大模型", "RAG 系统设计", "1 / 53 节", 0.02], ["算力", "训推平台与算力调度", "0 / 27 节", 0]];
+const OPTS = {
+  A: { kind: "xwl", name: "A 小灯", sub: "和听会同一个角色", idea: "直接用听会里的小灯，两个 App 像一家。它趴在「习」字上，眼睛看着今天要学的那一张；学完一件就蹦一下，今天的学完了就睡觉。上课时它替掉「在想…」那行字，答对点头，答错歪头冒问号，学完一节跳起来撒纸屑。",
+    lines: ["今天两节，先学中转站？", "又学完一节，还剩一节", "今天学完了，睡会儿"] },
+  B: { kind: "bird", name: "B 练飞的小鸟", sub: "「习」的本义", idea: "「习」本来的意思是小鸟一遍遍练飞（《说文》：习，数飞也），和每天复习一个道理。小鸟站在「习」字上，每学完一件就绕一圈飞一趟，留下一道虚线；今天的飞完了它缩起来睡。上课时答对扑腾翅膀，学完一节从屏幕外飞进来落在成绩卡上。",
+    lines: ["叽，今天飞两趟", "再飞一趟就收工", "飞累了，明天见"] },
+  C: { kind: "ink", name: "C 描红", sub: "大字跟着进度写出来", idea: "「学习」两个字换成一张描红纸：一开始是浅灰的字和田字格，今天学了多少，一滴小墨点就把字描到第几笔；全学完了盖一个红章「学完」。上课时小墨点陪着，学完一节在成绩卡上盖章。",
+    lines: ["今天把这两个字描完", "描了一半，接着来", "描完了，盖个章"] },
+  D: { kind: "note", name: "D 便利贴", sub: "大字换成手写的今天", idea: "左上角不写「学习」，换成手写的「还剩 2 节」，数字用笔圈起来；学完一节就把数字划掉、旁边改写成 1，像在纸上记账；全学完写「今天学完了」再打个勾。角色是贴在右上角的一张便利贴。",
+    lines: ["两节，三十分钟搞定", "划掉一节，还剩一节", "今天这张可以撕了"] },
+};
+let opt = "A", p = 0, homeM = null, hz = null, busy = false;
+
+const ACTS = `<div class="acts"><button class="gear">${ICON.gear}</button><button class="pill">${ICON.plus}新课</button></div>`;
+const DATE = `<div class="live"><b></b>10.23 周五</div>`;
+const todosHTML = (left) => `<div class="todos">${left.map((t, i) => `<button class="todo ${i ? "" : "first"}"><div><b>${t.cat}</b><span>${t.t}</span></div><i>${ICON.arrow}</i></button>`).join("")}</div>`;
+const todayHTML = (left, mins) => left.length
+  ? `<section><div class="sect">今天</div><div class="hrow"><span class="num-xl">${mins}</span><span class="unit">分钟左右</span></div>${todosHTML(left)}</section>`
+  : `<section><div class="sect">今天</div><h2 class="dn">今天的都学完了</h2><p class="dp">想多学一节，点下面的分类接着学。</p></section>`;
+const catsHTML = () => `<div class="sect">分类 3</div>` + CATS.map((c, i) => `<div class="it"><span class="no">0${i + 1}</span><div><h3>${c[0]}</h3><div class="sub">${c[1]}</div><div class="meta"><span class="bar"><i style="transform:scaleX(${c[3]})"></i></span>${c[2]}</div></div><span class="chev">›</span></div>`).join("");
+const NUMS = [2, 1];
+const HEAD = {
+  A: () => `<header class="top"><div class="tl"><h1 class="big">学习<span class="mh a"></span></h1>${DATE}</div>${ACTS}</header>`,
+  B: () => `<header class="top b"><div class="tl"><h1 class="big">学习<span class="mh b"></span></h1>${DATE}</div>${ACTS}<svg class="trail"></svg></header>`,
+  C: () => `<header class="top"><div class="tl"><div class="hz"></div>${DATE}<span class="mh c"></span>${p >= 2 ? `<div class="seal">学完</div>` : ""}</div>${ACTS}</header>`,
+  D: (left, mins) => `<header class="top"><div class="tl"><div class="dd">10.23 周五</div>${left.length
+    ? `<div class="hand"><span>还剩</span>${NUMS.slice(0, p).map((n) => `<span class="n struck">${n}<svg></svg></span>`).join("")}<span class="n now">${NUMS[p]}<svg></svg></span><span>节</span></div><div class="hsub"><span class="hl">大约 ${mins} 分钟<svg></svg></span></div>`
+    : `<div class="hand">今天学完了<span class="ck"><svg></svg></span></div><div class="hsub">想多学一节，去下面的分类</div>`}</div>${ACTS}<span class="mh d"></span></header>`,
+};
+
+function renderHome(fresh, justAdv) {
+  const home = $("#home"), left = TASKS.slice(p), mins = left.reduce((a, t) => a + t.min, 0), o = OPTS[opt];
+  home.innerHTML = `<div class="sb"><span>9:41</span><i></i></div><div class="scroll">${HEAD[opt](left, mins)}${opt === "D" ? (left.length ? `<div style="height:14px"></div>${todosHTML(left)}` : "") : todayHTML(left, mins)}${catsHTML()}</div>`;
+  const host = $(".mh", home);
+  homeM = new Mascot(host, o.kind, { A: 66, B: 54, C: 34, D: 62 }[opt]);
+  if (opt === "A") homeM.set(p >= 2 ? "sleep" : "look");
+  if (opt === "B") homeM.set(p >= 2 ? "sleep" : "idle");
+  if (opt === "C") {
+    hz = hanzi($(".hz", home), $(".tl", home));
+    const W = [0, 6, hz.n][p];
+    const place = (n) => { const [x, y] = hz.at(n); host.style.left = x + "px"; host.style.top = y + "px"; };
+    homeM.set(p >= 2 ? "sleep" : "idle"); if (p < 2) host.classList.add("idle-bob");
+    place(0);
+    if (fresh && W) { host.style.transition = "none"; requestAnimationFrame(() => { host.style.transition = ""; hz.write(0, W, 120, place); }); } else { hz.set(W); place(W); }
+    hz.place = place;
+  }
+  if (opt === "D") {
+    homeM.set(p >= 2 ? "sleep" : "idle"); if (p < 2) host.classList.add("sway");
+    home.querySelectorAll(".n").forEach((n) => {
+      const svg = n.querySelector("svg"), w = n.offsetWidth + 16, h = n.offsetHeight + 12; svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      if (n.classList.contains("struck")) sketch(svg, (rc, s) => grp(rc.line(4, h * 0.62, w - 4, h * 0.4, line(s, 2.4))));
+      else sketch(svg, (rc, s) => grp(rc.ellipse(w / 2, h / 2, w - 6, h - 4, { ...line(s, 2.4), roughness: 1.6, bowing: 2 })), fresh || justAdv ? 520 : 0);
+    });
+    const hl = $(".hl", home);
+    if (hl) { const svg = hl.querySelector("svg"), w = hl.offsetWidth + 4, h = hl.offsetHeight; svg.setAttribute("viewBox", `0 0 ${w} ${h}`); sketch(svg, (rc, s) => grp(rc.rectangle(2, h * 0.45, w - 4, h * 0.5, { ...hatch(s), hachureGap: 2.2, fillWeight: 3, hachureAngle: -20 }))); }
+    const ck = $(".ck svg", home);
+    if (ck) { ck.setAttribute("viewBox", "0 0 40 34"); sketch(ck, (rc, s) => grp(rc.linearPath([[6, 18], [16, 28], [36, 4]], line(s, 3.2))), justAdv ? 500 : 0); }
+  }
+  host.onclick = () => {
+    if (busy) return;
+    const back = homeM.expr;
+    homeM.set("happy").play("hop", 700);
+    bubble(opt === "C" ? $(".hz", home) : host, o.lines[p], home);
+    setTimeout(() => homeM.expr === "happy" && homeM.set(back), 1500);
+  };
+  if (fresh) [...home.querySelectorAll(".todo, .it, .hrow, .sect")].forEach((e, i) => e.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 60 * i, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards" }));
+}
+
+// 首页「学完一件」时各方案自己的动作
+const ADV = {
+  async A(np) { homeM.set("happy").play("hop", 700); await sleep(650); },
+  async B(np) {
+    const home = $("#home"), host = homeM.host, tr = $(".trail", home), hdr = $(".top", home);
+    const [bx, by] = centerIn(host, hdr);
+    const pts = [[0, 0], [60, -34], [150, -18], [176, 40], [96, 74], [26, 40], [0, 0]];
+    tr.innerHTML = ""; sketch(tr, (rc, s) => { const g = grp(rc.curve(pts.map(([x, y]) => [bx + x, by + y]), { ...line(s, 1.6, "#9a9aa0"), roughness: 0.8 })); g.querySelectorAll("path").forEach((q) => (q.style.strokeDasharray = "5 7")); return g; });
+    tr.style.opacity = 1;
+    homeM.set("happy"); host.classList.add("flap");
+    await host.animate(pts.map(([x, y], i) => ({ transform: `translate(${x}px,${y}px) rotate(${i === 0 || i === pts.length - 1 ? 0 : x > 100 ? 12 : -10}deg)` })), { duration: 1700, easing: "ease-in-out" }).finished;
+    host.classList.remove("flap"); homeM.play("hop", 700);
+    tr.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, fill: "forwards" });
+    await sleep(500);
+  },
+  async C(np) {
+    const W = [0, 6, hz.n];
+    homeM.set("happy");
+    await hz.write(W[np - 1], W[np], 260, hz.place);
+    if (np === 2) {
+      const tl = $(".tl", $("#home")), s = document.createElement("div"); s.className = "seal"; s.textContent = "学完"; tl.appendChild(s);
+      s.animate([{ transform: "rotate(-8deg) scale(2.6)", opacity: 0 }, { transform: "rotate(-8deg) scale(.9)", opacity: 1, offset: 0.7 }, { transform: "rotate(-8deg) scale(1)", opacity: 0.92 }], { duration: 420, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" });
+      await sleep(310);
+      $("#home").animate([{ transform: "none" }, { transform: "translate(1px,2px)" }, { transform: "translate(-1px,-1px)" }, { transform: "none" }], { duration: 180 });
+      await sleep(500);
+    }
+  },
+  async D(np) {
+    const n = $(".n.now", $("#home")); if (!n) return;
+    const svg = n.querySelector("svg"), w = n.offsetWidth + 16, h = n.offsetHeight + 12;
+    const st = mk("svg", { viewBox: `0 0 ${w} ${h}` }, n);
+    sketch(st, (rc, s) => grp(rc.line(4, h * 0.62, w - 4, h * 0.4, line(s, 2.8))), 320);
+    n.animate([{ color: "#0b0b0c" }, { color: "#b9b9bd" }], { duration: 400, delay: 200, fill: "forwards" });
+    homeM.set("happy").play("hop", 700);
+    await sleep(600);
+  },
+};
+
+async function advance() {
+  if (busy || p >= 2) return;
+  busy = true;
+  const home = $("#home"), np = p + 1;
+  await ADV[opt](np);
+  const first = $(".todo.first", home);
+  if (first) await first.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(60px)" }], { duration: 320, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).finished;
+  p = np;
+  renderHome(false, true);
+  homeM.set(p >= 2 ? "sleep" : "happy");
+  bubble(opt === "C" ? $(".hz", home) : homeM.host, OPTS[opt].lines[p], home);
+  if (p < 2) setTimeout(() => homeM.expr === "happy" && homeM.set(opt === "A" ? "look" : "idle"), 1800);
+  busy = false;
+}
+
+/* ── 上课 ── */
+const QOPTS = [["A", "Key 散在每个人手里"], ["B", "模型回答变慢"], ["C", "提示词没人维护"]];
+function renderChat(body) {
+  $("#chat").innerHTML = `<div class="sb"><span>9:41</span><i></i></div>
+    <div class="dtop"><button class="back">${ICON.back}</button><div><h1>01 网关到底替团队挡了什么</h1><small>AI 中转站</small></div></div>
+    <div class="scroll cs">${body ?? `<p class="ans">中转站这门课第一节。先考你一道，看你对网关有多少底子。</p>
+      <div class="q"><h4>团队直接调模型，最先出事的通常是哪一块？</h4>${QOPTS.map(([k, t]) => `<button class="op" data-k="${k}"><b>${k}</b><span>${t}</span><svg class="mk" viewBox="0 0 30 30"></svg></button>`).join("")}</div>`}<div id="react"></div></div>
+    <div class="comp"><span>直接打字回答</span><i>${ICON.up}</i></div>`;
+}
+async function chatDo(kind) {
+  const K = OPTS[opt].kind;
+  if (kind === "done") return finish(K);
+  renderChat();
+  const c = $("#chat"), r = $("#react", c), sc = $(".cs", c);
+  if (kind === "think") {
+    r.innerHTML = `<div class="waitline"><span class="mh"></span><span>在想</span><i class="dots"><b></b><b></b><b></b></i></div>`;
+    const m = new Mascot($(".mh", r), K, 34).set("think"); m.host.classList.add("think");
+    if (K === "bird") m.host.classList.add("flap");
+  } else {
+    const ok = kind === "right", op = $(`.op[data-k="${ok ? "A" : "B"}"]`, c);
+    op.classList.add(ok ? "ok" : "bad");
+    sketch($(".mk", op), (rc, s) => grp(ok ? rc.linearPath([[5, 16], [12, 24], [26, 5]], line(s, 3)) : [rc.line(7, 7, 23, 23, line(s, 2.6)), rc.line(23, 7, 7, 23, line(s, 2.6))]), 380);
+    await sleep(420);
+    r.innerHTML = `<div class="fb"><span class="mh"></span><p><b>${ok ? "对。" : "不对。"}</b>${ok ? "Key 散在每个人手里，谁用了多少、有没有泄露都没人知道。" : "慢是后面的事，最先出事的是 Key 和花销没人管。"}</p></div>`;
+    r.firstElementChild.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 360, easing: "cubic-bezier(.16,1,.3,1)" });
+    const m = new Mascot($(".mh", r), K, 42).set(ok ? "happy" : "wrong");
+    m.play(ok ? (K === "bird" ? "hop" : "nod") : "tilt", ok ? 900 : 0);
+    if (ok && K === "bird") { m.host.classList.add("flap"); setTimeout(() => m.host.classList.remove("flap"), 700); }
+  }
+  sc.scrollTop = sc.scrollHeight;
+}
+async function finish(K) {
+  const hand = opt === "D", seal = opt === "C";
+  renderChat(`<p class="ans">三道都过了，这一节就到这。</p>
+    <div class="score"><div class="sc-top"><span class="mh"></span>${seal ? `<div class="seal big">4分</div>` : `<div class="sc-n ${hand ? "hand2" : ""}">4<small>分</small>${hand ? "<svg></svg>" : ""}</div>`}</div>
+      <div class="sc-t">01 网关到底替团队挡了什么</div>
+      <ul><li>说得出网关替团队挡的三件事</li><li>知道 Key 为什么要收到一处</li><li>分得清限流和熔断</li><li class="n">计费按什么记</li></ul>
+      <button class="sc-b">回到课程</button></div>`);
+  const c = $("#chat"), host = $(".mh", c), m = new Mascot(host, K, 76).set("celebrate");
+  const boom = () => { const [x, y] = centerIn(host, c); confetti(c, x, y - 10, 18); };
+  if (opt === "A") { m.play("party", 1200); setTimeout(boom, 300); }
+  if (opt === "B") {
+    host.classList.add("flap");
+    await host.animate([{ transform: "translate(-180px,-160px) rotate(-14deg)" }, { transform: "translate(-60px,-120px) rotate(-6deg)", offset: 0.5 }, { transform: "translate(0,-14px) rotate(4deg)", offset: 0.85 }, { transform: "none" }], { duration: 1100, easing: "ease-out" }).finished;
+    host.classList.remove("flap"); m.play("hop", 700); boom();
+  }
+  if (opt === "C") {
+    const s = $(".seal.big", c);
+    s.animate([{ transform: "rotate(-8deg) scale(2.6)", opacity: 0 }, { transform: "rotate(-8deg) scale(.9)", opacity: 1, offset: 0.7 }, { transform: "rotate(-8deg) scale(1)", opacity: 0.92 }], { duration: 440, delay: 250, easing: "cubic-bezier(.5,0,.75,0)", fill: "both" });
+    setTimeout(() => { c.animate([{ transform: "none" }, { transform: "translate(1px,2px)" }, { transform: "translate(-1px,-1px)" }, { transform: "none" }], { duration: 180 }); m.play("party", 1200); boom(); }, 560);
+  }
+  if (opt === "D") {
+    host.animate([{ transform: "scale(2) rotate(-28deg)", opacity: 0 }, { transform: "scale(.92) rotate(10deg)", opacity: 1, offset: 0.7 }, { transform: "scale(1) rotate(7deg)" }], { duration: 460, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" });
+    const n = $(".sc-n.hand2", c), svg = n.querySelector("svg"), w = n.offsetWidth + 20, h = n.offsetHeight + 16;
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    setTimeout(() => { sketch(svg, (rc, s) => grp(rc.ellipse(w / 2, h / 2, w - 6, h - 4, { ...line(s, 2.6), roughness: 1.7, bowing: 2 })), 560); boom(); }, 420);
+  }
+  rise($(".score ul", c).children);
+  setTimeout(() => m.expr === "celebrate" && m.set("happy"), 1800);
+}
+const rise = (els) => [...els].forEach((e, i) => e.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: 500 + 90 * i, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards" }));
+
+/* ── 切方案 ── */
+$("#tabs").innerHTML = Object.entries(OPTS).map(([k, o]) => `<button class="tab" data-o="${k}"><b>${o.name}</b><small>${o.sub}</small></button>`).join("");
+function sync() {
+  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("on", t.dataset.o === opt));
+  $("#idea").textContent = OPTS[opt].idea;
+  p = 0; busy = false;
+  renderHome(true);
+  chatDo("think");
+}
+$("#tabs").onclick = (e) => { const b = e.target.closest(".tab"); if (b) { opt = b.dataset.o; sync(); } };
+$("#adv").onclick = advance;
+$("#reset").onclick = () => { p = 0; busy = false; renderHome(true); };
+document.querySelectorAll("[data-c]").forEach((b) => (b.onclick = () => chatDo(b.dataset.c)));
+const q = new URLSearchParams(location.search);
+if (OPTS[q.get("o")]) opt = q.get("o");
+Promise.race([document.fonts.ready, sleep(2500)]).then(sync);
+</script>
+</body>
+</html>

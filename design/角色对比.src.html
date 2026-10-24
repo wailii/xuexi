@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>角色和大字</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/lxgwwenkaigbscreen.css" media="print" onload="this.media='all'">
+<script>/*ROUGH*/</script>
+<style>
+  :root { --bg: #fff; --ink: #0b0b0c; --ink2: #55555a; --mute: #8a8a8e; --line: #ececec; --soft: #f4f4f5; --acc: #2f4bff; --acc-soft: #eef0ff; --y: #ffd84a; --red: #e2492f; --hand: "LXGW WenKai Screen", "Noto Sans SC", serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: #f1f1ef; color: var(--ink); font-family: Geist, "Noto Sans SC", sans-serif; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  /* 手画线三版轮换：每 140ms 换一版，像逐帧手绘 */
+  body[data-f="0"] .v1, body[data-f="0"] .v2, body[data-f="1"] .v0, body[data-f="1"] .v2, body[data-f="2"] .v0, body[data-f="2"] .v1 { display: none; }
+  svg.drawing .v1, svg.drawing .v2 { display: none !important; }
+  svg.drawing .v0 { display: inline !important; }
+
+  /* ── 对比页外壳 ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+  .ph1 { font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+  .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+  .tab { padding: 10px 12px; border-radius: 14px; background: #fff; text-align: left; border: 1.5px solid transparent; }
+  .tab b { display: block; font-size: 14px; } .tab small { display: block; margin-top: 2px; color: var(--mute); font-size: 12px; }
+  .tab.on { border-color: var(--ink); }
+  .idea { margin-top: 12px; font-size: 14px; line-height: 1.65; color: var(--ink2); }
+  .ctl { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 12px; }
+  .ctl .g { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; color: var(--mute); }
+  .ctl button { height: 32px; padding: 0 12px; border-radius: 16px; background: #fff; border: 1px solid #e0e0e0; font-size: 13px; color: var(--ink); }
+  .ctl button:active { transform: scale(.96); }
+  .phones { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; margin-top: 20px; }
+  .ph > small { display: block; text-align: center; margin-bottom: 10px; color: var(--mute); font-size: 12px; }
+  .phone { position: relative; width: 360px; height: 740px; border-radius: 42px; background: #fff; overflow: hidden; box-shadow: 0 0 0 8px #141414, 0 24px 60px rgba(0,0,0,.18); display: flex; flex-direction: column; }
+  @media (max-width: 420px) { .tabs { grid-template-columns: 1fr 1fr; } .phone { width: calc(100vw - 48px); } }
+
+  /* ── App 里的样子（照着现在的学习 App） ── */
+  .sb { flex: none; height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 4px 26px 0; font-size: 14px; font-weight: 600; }
+  .sb i { width: 24px; height: 11px; border: 1.5px solid var(--ink); border-radius: 3.5px; position: relative; }
+  .sb i::after { content: ""; position: absolute; inset: 1.5px 6px 1.5px 1.5px; background: var(--ink); border-radius: 1.5px; }
+  .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 16px 40px; scrollbar-width: none; position: relative; }
+  .scroll::-webkit-scrollbar { display: none; }
+  .top { position: relative; display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 2px 8px; }
+  .top.b { padding-top: 50px; }
+  .tl { position: relative; min-width: 0; }
+  h1.big { position: relative; display: inline-flex; font-size: 54px; font-weight: 900; letter-spacing: -.045em; line-height: .98; }
+  .acts { display: flex; align-items: center; gap: 8px; margin-top: 4px; position: relative; z-index: 2; }
+  .gear { width: 36px; height: 36px; display: grid; place-items: center; } .gear svg { width: 22px; height: 22px; }
+  .pill { height: 42px; padding: 0 15px; border-radius: 21px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .pill svg { width: 15px; height: 15px; }
+  .live { margin-top: 10px; display: flex; align-items: center; gap: 8px; font: 12px "Geist Mono", "Noto Sans SC", monospace; color: var(--mute); }
+  .live b { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+  .sect { display: flex; align-items: center; gap: 10px; margin: 26px 2px 4px; font: 11.5px "Geist Mono", "Noto Sans SC", monospace; color: var(--mute); letter-spacing: .08em; }
+  .sect::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .hrow { display: flex; align-items: baseline; gap: 8px; margin: 12px 2px 16px; }
+  .num-xl { font-size: 84px; font-weight: 800; letter-spacing: -.06em; line-height: .8; }
+  .unit { font-size: 18px; font-weight: 700; color: var(--mute); }
+  .todos { display: flex; flex-direction: column; gap: 10px; }
+  .todo { display: flex; align-items: center; gap: 12px; padding: 15px 10px 15px 20px; border-radius: 28px; border: 1.5px solid var(--line); text-align: left; background: #fff; }
+  .todo.first { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .todo div { flex: 1; min-width: 0; }
+  .todo b { display: block; font-size: 17px; font-weight: 800; }
+  .todo span { display: block; margin-top: 3px; font-size: 13.5px; color: var(--ink2); line-height: 1.45; }
+  .todo.first span { color: rgba(255,255,255,.7); }
+  .todo i { width: 46px; height: 46px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; flex: none; }
+  .todo.first i { background: #fff; color: var(--ink); }
+  .todo i svg { width: 18px; height: 18px; }
+  .dn { font-size: 24px; font-weight: 900; margin: 12px 2px 0; }
+  .dp { margin: 8px 2px 0; font-size: 14px; color: var(--ink2); line-height: 1.6; }
+  .it { display: grid; grid-template-columns: 50px 1fr 14px; gap: 6px; padding: 16px 2px; border-bottom: 1px solid var(--line); }
+  .it .no { font-size: 28px; font-weight: 700; letter-spacing: -.05em; color: #c8c8cc; line-height: 1; }
+  .it h3 { font-size: 18px; font-weight: 800; line-height: 1.3; }
+  .it .sub { margin-top: 2px; font-size: 13px; color: var(--ink2); }
+  .meta { margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--mute); }
+  .bar { width: 90px; height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--ink); transform-origin: left; }
+  .it .chev { color: #c8c8cc; font-size: 20px; line-height: 1; }
+
+  /* 对话页 */
+  .dtop { flex: none; display: flex; align-items: center; gap: 4px; padding: 2px 12px 10px 4px; border-bottom: 1px solid var(--line); }
+  .dtop h1 { font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dtop small { display: block; margin-top: 1px; font-size: 11.5px; color: var(--mute); }
+  .dtop > div { min-width: 0; }
+  .back { width: 40px; height: 40px; display: grid; place-items: center; flex: none; } .back svg { width: 22px; height: 22px; }
+  .cs { padding-top: 14px; }
+  .ans { font-size: 15.5px; line-height: 1.7; margin: 4px 2px 14px; }
+  .q { border: 1.5px solid var(--line); border-radius: 22px; padding: 16px 12px 12px; box-shadow: 0 0 0 4px var(--acc-soft); }
+  .q h4 { font-size: 16px; font-weight: 700; line-height: 1.5; margin: 0 4px 6px; }
+  .op { position: relative; width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px; border-radius: 16px; border: 1.5px solid var(--line); margin-top: 8px; text-align: left; font-size: 15px; }
+  .op b { width: 24px; height: 24px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font: 600 12px "Geist Mono", monospace; flex: none; }
+  .op.ok { border-color: var(--ink); } .op.ok b { background: var(--ink); color: #fff; }
+  .op.bad { color: var(--mute); }
+  .op .mk { position: absolute; right: 10px; top: 50%; width: 30px; height: 30px; margin-top: -15px; overflow: visible; pointer-events: none; }
+  .waitline { display: flex; align-items: center; gap: 8px; margin: 16px 2px 0; font-size: 14px; color: var(--mute); }
+  .dots b { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--mute); margin-left: 3px; animation: dot 1.2s infinite; }
+  .dots b:nth-child(2) { animation-delay: .2s; } .dots b:nth-child(3) { animation-delay: .4s; }
+  @keyframes dot { 0%, 60%, 100% { transform: none; opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
+  .fb { display: flex; gap: 10px; align-items: flex-start; margin: 16px 2px 0; }
+  .fb p { flex: 1; font-size: 15px; line-height: 1.7; padding-top: 6px; }
+  .score { position: relative; margin-top: 6px; border-radius: 26px; border: 1.5px solid var(--line); padding: 18px 18px 16px; }
+  .sc-top { display: flex; align-items: center; gap: 14px; min-height: 84px; }
+  .sc-n { font-size: 58px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+  .sc-n small { font-size: 18px; color: var(--mute); font-weight: 700; margin-left: 3px; letter-spacing: 0; }
+  .sc-t { margin-top: 10px; font-size: 14px; color: var(--ink2); }
+  .score ul { list-style: none; margin-top: 8px; font-size: 14px; line-height: 2; }
+  .score li::before { content: "✓"; display: inline-block; width: 20px; font-weight: 700; }
+  .score li.n { color: var(--mute); } .score li.n::before { content: "–"; }
+  .sc-b { margin-top: 12px; height: 44px; width: 100%; border-radius: 22px; background: var(--ink); color: #fff; font-weight: 700; font-size: 14.5px; }
+  .comp { flex: none; margin: 8px 12px 14px; height: 52px; border-radius: 26px; border: 1.5px solid var(--line); display: flex; align-items: center; padding: 0 6px 0 18px; color: var(--mute); font-size: 14.5px; }
+  .comp span { flex: 1; }
+  .comp i { width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; } .comp i svg { width: 18px; height: 18px; }
+
+  /* ── 角色 ── */
+  .m { position: relative; flex: none; cursor: pointer; }
+  .m > svg { width: 100%; height: 100%; overflow: visible; display: block; }
+  .mh.a { position: absolute; right: -50px; bottom: 2px; transform: rotate(-10deg); z-index: 3; }
+  .mh.b { position: absolute; right: -6px; top: -48px; z-index: 3; }
+  .mh.c { position: absolute; z-index: 3; transform: translate(-50%, -86%); transition: left .3s cubic-bezier(.3,0,.2,1), top .3s cubic-bezier(.3,0,.2,1); }
+  .mh.d { position: absolute; right: 4px; top: 70px; transform: rotate(7deg); z-index: 3; }
+  .m.idle-bob > svg { animation: bob 2.6s ease-in-out infinite; }
+  .m.sway > svg { animation: sway 3.2s ease-in-out infinite; transform-origin: 50% 10%; }
+  .m.think > svg { animation: bob 1.3s ease-in-out infinite; }
+  .m.sleep > svg { animation: breathe 3s ease-in-out infinite; transform-origin: 50% 90%; }
+  .m.nod > svg { animation: nod .9s cubic-bezier(.3,0,.2,1); transform-origin: 50% 85%; }
+  .m.hop > svg { animation: hop .7s cubic-bezier(.3,0,.2,1); transform-origin: 50% 100%; }
+  .m.tilt > svg { animation: tilt 1s cubic-bezier(.3,0,.2,1) forwards; transform-origin: 50% 80%; }
+  .m.party > svg { animation: party 1.2s cubic-bezier(.3,0,.2,1); transform-origin: 50% 100%; }
+  @keyframes bob { 50% { transform: translateY(-5%) rotate(-3deg); } }
+  @keyframes sway { 50% { transform: rotate(-4deg); } }
+  @keyframes breathe { 50% { transform: scale(1.05, .95); } }
+  @keyframes nod { 0%, 100% { transform: none; } 20% { transform: rotate(-9deg) translateY(3%); } 45% { transform: rotate(6deg); } 70% { transform: rotate(-4deg); } }
+  @keyframes hop { 0% { transform: none; } 18% { transform: scale(1.12, .86); } 45% { transform: translateY(-28%) scale(.94, 1.08); } 75% { transform: scale(1.08, .92); } 100% { transform: none; } }
+  @keyframes tilt { 0% { transform: none; } 30% { transform: rotate(15deg); } 55% { transform: rotate(9deg); } 100% { transform: rotate(11deg); } }
+  @keyframes party { 0% { transform: none; } 15% { transform: scale(1.15, .82); } 40% { transform: translateY(-45%) rotate(-12deg); } 60% { transform: translateY(-45%) rotate(14deg); } 85% { transform: scale(1.1, .9); } 100% { transform: none; } }
+  .wing { transform-box: fill-box; transform-origin: 85% 50%; }
+  .m.flap .wing { animation: flap .14s linear infinite alternate; }
+  @keyframes flap { to { transform: rotate(-42deg); } }
+  .zz { position: absolute; right: -8%; top: -14%; font: 700 15px var(--hand); color: var(--ink); pointer-events: none; }
+  .zz i { position: absolute; font-style: normal; opacity: 0; animation: zz 2.4s linear infinite; }
+  .zz i:nth-child(2) { animation-delay: .8s; } .zz i:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes zz { 0% { opacity: 0; transform: translate(0, 0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(16px, -28px) scale(1.25); } }
+  .bub { position: absolute; z-index: 40; padding: 8px 13px; font: 14px/1.4 var(--hand); white-space: nowrap; pointer-events: none; }
+  .bub svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; z-index: -1; }
+  .cf { position: absolute; width: 18px; height: 18px; pointer-events: none; z-index: 50; overflow: visible; }
+  svg.trail { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+
+  /* C 描红 */
+  .hz { display: flex; gap: 4px; }
+  .hz svg { width: 66px; height: 66px; display: block; }
+  .seal { position: absolute; left: 148px; top: 12px; width: 38px; height: 38px; border-radius: 6px; background: var(--red); color: #fff; font: 15px/1.05 var(--hand); display: grid; place-items: center; text-align: center; transform: rotate(-8deg); opacity: .92; box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); padding-top: 1px; }
+  .seal.big { position: static; width: 64px; height: 64px; font-size: 22px; border-radius: 9px; }
+
+  /* D 便利贴手写 */
+  .dd { font: 14px var(--hand); color: var(--mute); }
+  .hand { display: flex; align-items: baseline; gap: 2px; margin-top: 4px; font: 42px/1.25 var(--hand); white-space: nowrap; }
+  .n { position: relative; display: inline-block; padding: 0 8px; }
+  .n.struck { color: #b9b9bd; font-size: .8em; padding: 0 4px; }
+  .n > svg, .ck svg, .hl > svg { position: absolute; overflow: visible; pointer-events: none; }
+  .n > svg { inset: -6px -8px; width: calc(100% + 16px); height: calc(100% + 12px); }
+  .ck { position: relative; display: inline-block; width: 40px; height: 34px; }
+  .ck svg { inset: 0; width: 100%; height: 100%; }
+  .hsub { margin-top: 4px; font: 16px var(--hand); color: var(--ink2); }
+  .hl { position: relative; z-index: 0; padding: 0 3px; }
+  .hl > svg { inset: 2px -2px -2px; width: calc(100% + 4px); height: calc(100% - 0px); z-index: -1; }
+  .sc-n.hand2 { font: 52px/1 var(--hand); position: relative; padding: 0 8px; }
+  .sc-n.hand2 > svg { position: absolute; inset: -8px -10px; width: calc(100% + 20px); height: calc(100% + 16px); overflow: visible; }
+</style>
+</head>
+<body data-f="0">
+<div class="page">
+  <div class="ph1">学习 App · 角色和左上角大字</div>
+  <div class="tabs" id="tabs"></div>
+  <p class="idea" id="idea"></p>
+  <div class="ctl">
+    <div class="g">首页 <button id="adv">学完一件</button><button id="reset">重来</button> 点角色试试</div>
+    <div class="g">上课 <button data-c="think">在想</button><button data-c="right">答对</button><button data-c="wrong">答错</button><button data-c="done">学完一节</button></div>
+  </div>
+  <div class="phones">
+    <div class="ph"><small>首页</small><div class="phone" id="home"></div></div>
+    <div class="ph"><small>上课</small><div class="phone" id="chat"></div></div>
+  </div>
+</div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg", INK = "#1d1c1a", Y = "#ffd84a", RED = "#e2492f", ACC = "#2f4bff";
+const HZ = /*HZ*/;
+const $ = (s, r = document) => r.querySelector(s);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let F = 0;
+setInterval(() => { F = (F + 1) % 3; document.body.dataset.f = F; }, 140);
+
+const ICON = {
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+};
+
+function mk(tag, attrs = {}, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function grp(...nodes) { const g = mk("g"); nodes.flat().forEach((n) => n && g.appendChild(n)); return g; }
+// 在 svg 里画三版手画线（三个 seed），轮换着抖；drawIn>0 时先一笔笔画出来
+function sketch(svg, make, drawIn = 0) {
+  svg.querySelectorAll(":scope > .v0, :scope > .v1, :scope > .v2").forEach((g) => g.remove());
+  const rc = rough.svg(svg), gs = [];
+  for (let k = 0; k < 3; k++) { const g = make(rc, 5 + k * 23); g.classList.add("v" + k); svg.appendChild(g); gs.push(g); }
+  if (drawIn) {
+    svg.classList.add("drawing");
+    const ps = [...gs[0].querySelectorAll("path")];
+    ps.forEach((p) => { const L = p.getTotalLength() + 2; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
+    requestAnimationFrame(() => requestAnimationFrame(() => ps.forEach((p, i) => { p.style.transition = `stroke-dashoffset ${drawIn}ms cubic-bezier(.5,0,.3,1) ${i * 50}ms`; p.style.strokeDashoffset = 0; })));
+    setTimeout(() => { svg.classList.remove("drawing"); ps.forEach((p) => { p.style.strokeDasharray = ""; p.style.strokeDashoffset = ""; p.style.transition = ""; }); }, drawIn + ps.length * 50 + 100);
+  }
+  return svg;
+}
+
+/* ── 角色怎么画（100×100 的画布） ── */
+const line = (s, w = 2.4, c = INK) => ({ seed: s, stroke: c, strokeWidth: w, roughness: 1.2, bowing: 1.3 });
+const hatch = (s, c = Y) => ({ seed: s, stroke: "none", fill: c, fillStyle: "hachure", hachureGap: 3, fillWeight: 2.4, hachureAngle: -42, roughness: 1.5 });
+const dot = (s, c = INK) => ({ seed: s, stroke: c, strokeWidth: 0.8, fill: c, fillStyle: "solid", roughness: 0.4 });
+const LOOK = { think: [-2.5, -3], look: [1.6, 2.6] };
+function eyes(rc, s, cx, cy, gap, e, c = INK) {
+  const out = [], [dx, dy] = LOOK[e] || [0, 0];
+  for (const x of [cx - gap / 2, cx + gap / 2]) {
+    if (e === "happy" || e === "celebrate") out.push(rc.path(`M${x - 5} ${cy + 2} Q${x} ${cy - 6} ${x + 5} ${cy + 2}`, line(s, 2.6, c)));
+    else if (e === "sleep") out.push(rc.path(`M${x - 5} ${cy} Q${x} ${cy + 5} ${x + 5} ${cy}`, line(s, 2.4, c)));
+    else if (e === "blink") out.push(rc.line(x - 5, cy + 1, x + 5, cy + 1, line(s, 2.4, c)));
+    else out.push(rc.ellipse(x + dx, cy + dy, 9, 10.5, dot(s, c)));
+  }
+  return out;
+}
+function mouth(rc, s, cx, my, e, c = INK) {
+  const o = line(s, 2.4, c);
+  if (e === "celebrate") return rc.path(`M${cx - 10} ${my - 2} Q${cx} ${my + 13} ${cx + 10} ${my - 2} Z`, { ...dot(s, c), roughness: 0.8 });
+  if (e === "happy") return rc.path(`M${cx - 11} ${my - 2} Q${cx} ${my + 10} ${cx + 11} ${my - 2}`, o);
+  if (e === "wrong") return rc.path(`M${cx - 9} ${my + 2} Q${cx - 4.5} ${my - 2} ${cx} ${my + 2} Q${cx + 4.5} ${my + 6} ${cx + 9} ${my + 2}`, o);
+  if (e === "think") return rc.ellipse(cx + 5, my + 2, 6, 6, o);
+  if (e === "sleep") return rc.path(`M${cx - 5} ${my + 2} Q${cx} ${my + 4} ${cx + 5} ${my + 2}`, o);
+  return rc.path(`M${cx - 9} ${my - 1} Q${cx} ${my + 7} ${cx + 9} ${my - 1}`, o);
+}
+// 问号、想事的小泡泡、开心的小闪线
+function marks(rc, s, e, x, y) {
+  if (e === "wrong") return [rc.path(`M${x - 5} ${y} Q${x - 5} ${y - 8} ${x + 2} ${y - 8} Q${x + 9} ${y - 8} ${x + 8} ${y - 1} Q${x + 7} ${y + 4} ${x + 2} ${y + 6} L${x + 2} ${y + 11}`, line(s, 2.4)), rc.ellipse(x + 2, y + 17, 3.5, 3.5, dot(s))];
+  if (e === "think") return [rc.ellipse(x - 5, y + 12, 5, 5, line(s, 1.8)), rc.ellipse(x + 4, y + 1, 9, 9, line(s, 1.8))];
+  if (e === "happy" || e === "celebrate") return [rc.line(x - 2, y + 4, x + 6, y - 4, line(s, 2)), rc.line(x + 2, y + 11, x + 12, y + 9, line(s, 2)), rc.line(x - 9, y + 1, x - 9, y - 8, line(s, 2))];
+  return [];
+}
+const DRAW = {
+  // 小灯：气泡脸 + 耳机，和听会里那个一样
+  xwl(rc, s, e) {
+    const cx = 50, cy = 57, rx = 31, ry = 31, pts = [];
+    for (let a = 130; a <= 460; a += 15) { const r = (a * Math.PI) / 180; pts.push([cx + rx * Math.cos(r), cy + ry * Math.sin(r)]); }
+    const p0 = pts[0], p1 = pts[pts.length - 1];
+    return grp(
+      rc.ellipse(cx - 2, cy - 2, 55, 56, hatch(s)),
+      rc.curve(pts, line(s, 2.6)),
+      rc.linearPath([p1, [27, 98], p0], line(s, 2.6)),
+      rc.path("M16 56 C14 14 86 14 84 56", line(s, 2.8)),
+      rc.path("M21 52 C21 22 79 22 79 52", line(s, 1.5)),
+      rc.rectangle(9, 46, 11, 22, { ...line(s, 2.4), fill: "#fff", fillStyle: "solid" }),
+      rc.rectangle(80, 46, 11, 22, { ...line(s, 2.4), fill: "#fff", fillStyle: "solid" }),
+      eyes(rc, s, cx, 52, 20, e), mouth(rc, s, cx, 67, e), marks(rc, s, e, 90, 8));
+  },
+  // 练飞的小鸟：圆身子、一只眼、会扑腾的翅膀
+  bird(rc, s, e) {
+    const ex = 64, ey = 46;
+    let eye;
+    if (e === "happy" || e === "celebrate") eye = rc.path(`M${ex - 5} ${ey + 2} Q${ex} ${ey - 5} ${ex + 5} ${ey + 2}`, line(s, 2.6));
+    else if (e === "sleep" || e === "blink") eye = rc.path(`M${ex - 5} ${ey} Q${ex} ${ey + 4} ${ex + 5} ${ey}`, line(s, 2.4));
+    else { const [dx, dy] = LOOK[e] || [0, 0]; eye = rc.ellipse(ex + dx * 0.6, ey + dy * 0.6, 8, 9, dot(s)); }
+    const open = e === "celebrate" || e === "happy";
+    const wing = grp(rc.path("M30 64 Q34 52 50 60 Q44 74 30 64 Z", { ...line(s, 2.2), fill: "#fff", fillStyle: "solid" }));
+    wing.classList.add("wing");
+    return grp(
+      rc.ellipse(48, 58, 50, 50, hatch(s)),
+      rc.ellipse(50, 60, 54, 54, line(s, 2.6)),
+      rc.path("M46 34 Q47 25 53 27 M52 33 Q56 24 62 29", line(s, 2)),
+      rc.path("M24 54 L15 47 M23 59 L13 57", line(s, 2.2)),
+      open ? rc.linearPath([[76, 49], [87, 46], [77, 53], [86, 58], [76, 57]], line(s, 2.4)) : rc.linearPath([[76, 49], [87, 53], [76, 57]], line(s, 2.4)),
+      e === "wrong" ? rc.path("M58 38 L70 40", line(s, 2.2)) : null,
+      eye, wing,
+      rc.path("M44 86 L42 95 M37 95 L47 95 M56 86 L58 95 M53 95 L63 95", line(s, 2)),
+      marks(rc, s, e, 84, 10));
+  },
+  // 墨点：一滴墨，白眼睛
+  ink(rc, s, e) {
+    const W = "#fff";
+    const body = rc.path("M50 10 C57 26 84 36 84 60 C84 79 69 90 50 90 C31 90 16 79 16 60 C16 36 43 26 50 10 Z", { seed: s, stroke: INK, strokeWidth: 2, fill: INK, fillStyle: "solid", roughness: 1.1 });
+    const out = [body, rc.path("M27 54 Q28 44 35 38", line(s, 2, W))];
+    for (const x of [39, 61]) {
+      if (e === "happy" || e === "celebrate") out.push(rc.path(`M${x - 6} 58 Q${x} 50 ${x + 6} 58`, line(s, 2.6, W)));
+      else if (e === "sleep" || e === "blink") out.push(rc.path(`M${x - 6} 55 Q${x} 60 ${x + 6} 55`, line(s, 2.4, W)));
+      else { const [dx, dy] = LOOK[e] || [0, 0]; out.push(rc.ellipse(x, 55, 13, 14.5, dot(s, W)), rc.ellipse(x + dx * 0.8 + 1, 56 + dy * 0.8, 6, 7, dot(s, INK))); }
+    }
+    out.push(mouth(rc, s, 50, 70, e, W), ...marks(rc, s, e, 86, 6));
+    return grp(out);
+  },
+  // 便利贴：一张黄纸，顶上一截胶带，右下角折起来
+  note(rc, s, e) {
+    return grp(
+      rc.rectangle(18, 21, 64, 62, hatch(s)),
+      rc.path("M16 19 L84 20 L83 70 L69 85 L17 84 Z", line(s, 2.4)),
+      rc.path("M83 70 L71 71 L69 85", line(s, 2)),
+      rc.rectangle(37, 11, 26, 11, { seed: s, stroke: "#9b978d", strokeWidth: 1.3, fill: "#d9d5ca", fillStyle: "hachure", hachureGap: 2.4, fillWeight: 1.2, roughness: 1.2 }),
+      eyes(rc, s, 50, 46, 20, e), mouth(rc, s, 50, 60, e), marks(rc, s, e, 92, 4));
+  },
+};
+
+class Mascot {
+  constructor(host, kind, size) {
+    this.host = host; this.kind = kind; this.expr = "idle";
+    host.classList.add("m"); host.style.width = host.style.height = size + "px";
+    this.svg = mk("svg", { viewBox: "0 0 100 100" }, host);
+    this.draw();
+    const blink = () => {
+      if (!host.isConnected) return;
+      if (this.expr === "idle" || this.expr === "look") { const e = this.expr; this.paint("blink"); setTimeout(() => this.expr === e && this.paint(e), 150); }
+      setTimeout(blink, 2400 + Math.random() * 2800);
+    };
+    setTimeout(blink, 1200 + Math.random() * 1800);
+  }
+  paint(e) { this.svg.querySelectorAll("g").forEach((g) => g.parentNode === this.svg && g.remove()); const rc = rough.svg(this.svg); for (let k = 0; k < 3; k++) { const g = DRAW[this.kind](rc, 3 + k * 17, e); g.classList.add("v" + k); this.svg.appendChild(g); } }
+  draw() { this.paint(this.expr); }
+  set(e) { this.expr = e; this.draw(); this.sleep(e === "sleep"); return this; }
+  play(cls, ms) { const h = this.host; h.classList.remove(cls); void h.offsetWidth; h.classList.add(cls); clearTimeout(h["_" + cls]); if (ms) h["_" + cls] = setTimeout(() => h.classList.remove(cls), ms); return this; }
+  sleep(on) {
+    this.host.classList.toggle("sleep", on);
+    let z = this.host.querySelector(".zz");
+    if (on && !z) { z = document.createElement("div"); z.className = "zz"; z.innerHTML = "<i>z</i><i>z</i><i>Z</i>"; this.host.appendChild(z); }
+    if (!on && z) z.remove();
+  }
+}
+
+function bubble(anchor, text, root) {
+  root.querySelectorAll(".bub").forEach((b) => b.remove());
+  const b = document.createElement("div"); b.className = "bub"; b.innerHTML = `<svg></svg><span>${text}</span>`;
+  root.appendChild(b);
+  const ar = anchor.getBoundingClientRect(), rr = root.getBoundingClientRect(), w = b.offsetWidth, h = b.offsetHeight;
+  let x = ar.left - rr.left + ar.width / 2 - w / 2; x = Math.max(12, Math.min(rr.width - w - 12, x));
+  b.style.left = x + "px"; b.style.top = ar.bottom - rr.top + 8 + "px";
+  const svg = b.querySelector("svg"); svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  sketch(svg, (rc, s) => grp(rc.rectangle(2, 2, w - 4, h - 4, { seed: s, stroke: INK, strokeWidth: 1.8, roughness: 1.4, fill: "#fff", fillStyle: "solid" })));
+  b.animate([{ opacity: 0, transform: "translateY(-6px) scale(.9)" }, { opacity: 1, transform: "none" }], { duration: 280, easing: "cubic-bezier(.3,1.4,.5,1)" });
+  setTimeout(() => { b.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }).onfinish = () => b.remove(); }, 2600);
+}
+
+function confetti(root, x, y, n = 16) {
+  for (let i = 0; i < n; i++) {
+    const s = mk("svg", { viewBox: "0 0 20 20", class: "cf" }); root.appendChild(s);
+    const rc = rough.svg(s), t = i % 4;
+    s.appendChild(t === 0 ? rc.rectangle(4, 4, 12, 12, { seed: i + 1, stroke: INK, strokeWidth: 1.2, fill: Y, fillStyle: "hachure", hachureGap: 2.2, roughness: 1.4 })
+      : t === 1 ? rc.line(3, 17, 17, 3, { seed: i + 1, stroke: INK, strokeWidth: 2, roughness: 1.6 })
+      : t === 2 ? rc.ellipse(10, 10, 9, 9, { seed: i + 1, stroke: ACC, strokeWidth: 2 })
+      : rc.path("M2 10 Q6 4 10 10 T18 10", { seed: i + 1, stroke: INK, strokeWidth: 1.8, roughness: 1 }));
+    s.style.left = x - 9 + "px"; s.style.top = y - 9 + "px";
+    const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.6, d = 60 + Math.random() * 90, dx = Math.cos(a) * d, dy = Math.sin(a) * d, r = (Math.random() - 0.5) * 540;
+    s.animate([{ transform: "translate(0,0) scale(.3)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(1) rotate(${r / 2}deg)`, opacity: 1, offset: 0.45 }, { transform: `translate(${dx * 1.15}px,${dy + 130}px) scale(.9) rotate(${r}deg)`, opacity: 0 }],
+      { duration: 1300 + Math.random() * 400, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }).onfinish = () => s.remove();
+  }
+}
+const centerIn = (el, root) => { const a = el.getBoundingClientRect(), r = root.getBoundingClientRect(); return [a.left - r.left + a.width / 2, a.top - r.top + a.height / 2]; };
+
+/* ── 描红：「学习」两个字的笔画（Make Me a Hanzi 的数据），写到第几笔跟着今天的进度 ── */
+function hanzi(box, rel) {
+  const S = 66, strokes = [];
+  for (const ch of ["学", "习"]) {
+    const svg = mk("svg", { viewBox: "0 0 1024 1024" }, box);
+    mk("rect", { x: 10, y: 10, width: 1004, height: 1004, fill: "none", stroke: "#e4e4e7", "stroke-width": 12 }, svg);
+    mk("path", { d: "M512 10V1014M10 512H1014", stroke: "#ececef", "stroke-width": 9, "stroke-dasharray": "30 24" }, svg);
+    const g = mk("g", { transform: "translate(0,900) scale(1,-1)" }, svg);
+    HZ[ch].strokes.forEach((d, i) => {
+      const id = `hz${ch.charCodeAt(0)}_${i}_${Math.random().toString(36).slice(2, 7)}`;
+      mk("path", { d }, mk("clipPath", { id }, g));
+      mk("path", { d, fill: "#e8e8eb" }, g);
+      const m = HZ[ch].medians[i];
+      const ink = mk("path", { d: "M" + m.map((q) => q.join(" ")).join(" L"), fill: "none", stroke: INK, "stroke-width": 170, "stroke-linecap": "round", "stroke-linejoin": "round", "clip-path": `url(#${id})` }, g);
+      strokes.push({ ink, m, svg });
+    });
+  }
+  strokes.forEach((s) => { s.L = s.ink.getTotalLength() + 220; s.ink.style.strokeDasharray = s.L; s.ink.style.strokeDashoffset = s.L; });
+  const pt = (k, end) => {
+    const s = strokes[k], [x, y] = end ? s.m[s.m.length - 1] : s.m[0], r = s.svg.getBoundingClientRect(), br = rel.getBoundingClientRect();
+    return [r.left - br.left + (x / 1024) * S, r.top - br.top + ((900 - y) / 1024) * S];
+  };
+  return {
+    n: strokes.length,
+    at: (n) => (n ? pt(n - 1, true) : pt(0, false)),
+    set(n) { strokes.forEach((s, i) => (s.ink.style.strokeDashoffset = i < n ? 0 : s.L)); },
+    async write(from, to, each, onStroke) {
+      for (let k = from; k < to; k++) {
+        const s = strokes[k];
+        s.ink.style.transition = `stroke-dashoffset ${each}ms cubic-bezier(.45,0,.3,1)`; s.ink.style.strokeDashoffset = 0;
+        onStroke?.(k + 1); await sleep(each + 30); s.ink.style.transition = "";
+      }
+    },
+  };
+}
+
+/* ── 数据：四个方案用同一份 ── */
+const TASKS = [{ cat: "AI 中转站", t: "学 01 网关到底替团队挡了什么", min: 15 }, { cat: "算力", t: "学 01 训推平台全景：从训练到上线的链路", min: 15 }];
+const CATS = [["AI 中转站", "AI 中转站：怎么给团队搭一层稳的模型网关", "0 / 40 节", 0], ["大模型", "RAG 系统设计", "1 / 53 节", 0.02], ["算力", "训推平台与算力调度", "0 / 27 节", 0]];
+const OPTS = {
+  A: { kind: "xwl", name: "A 小灯", sub: "和听会同一个角色", idea: "直接用听会里的小灯，两个 App 像一家。它趴在「习」字上，眼睛看着今天要学的那一张；学完一件就蹦一下，今天的学完了就睡觉。上课时它替掉「在想…」那行字，答对点头，答错歪头冒问号，学完一节跳起来撒纸屑。",
+    lines: ["今天两节，先学中转站？", "又学完一节，还剩一节", "今天学完了，睡会儿"] },
+  B: { kind: "bird", name: "B 练飞的小鸟", sub: "「习」的本义", idea: "「习」本来的意思是小鸟一遍遍练飞（《说文》：习，数飞也），和每天复习一个道理。小鸟站在「习」字上，每学完一件就绕一圈飞一趟，留下一道虚线；今天的飞完了它缩起来睡。上课时答对扑腾翅膀，学完一节从屏幕外飞进来落在成绩卡上。",
+    lines: ["叽，今天飞两趟", "再飞一趟就收工", "飞累了，明天见"] },
+  C: { kind: "ink", name: "C 描红", sub: "大字跟着进度写出来", idea: "「学习」两个字换成一张描红纸：一开始是浅灰的字和田字格，今天学了多少，一滴小墨点就把字描到第几笔；全学完了盖一个红章「学完」。上课时小墨点陪着，学完一节在成绩卡上盖章。",
+    lines: ["今天把这两个字描完", "描了一半，接着来", "描完了，盖个章"] },
+  D: { kind: "note", name: "D 便利贴", sub: "大字换成手写的今天", idea: "左上角不写「学习」，换成手写的「还剩 2 节」，数字用笔圈起来；学完一节就把数字划掉、旁边改写成 1，像在纸上记账；全学完写「今天学完了」再打个勾。角色是贴在右上角的一张便利贴。",
+    lines: ["两节，三十分钟搞定", "划掉一节，还剩一节", "今天这张可以撕了"] },
+};
+let opt = "A", p = 0, homeM = null, hz = null, busy = false;
+
+const ACTS = `<div class="acts"><button class="gear">${ICON.gear}</button><button class="pill">${ICON.plus}新课</button></div>`;
+const DATE = `<div class="live"><b></b>10.23 周五</div>`;
+const todosHTML = (left) => `<div class="todos">${left.map((t, i) => `<button class="todo ${i ? "" : "first"}"><div><b>${t.cat}</b><span>${t.t}</span></div><i>${ICON.arrow}</i></button>`).join("")}</div>`;
+const todayHTML = (left, mins) => left.length
+  ? `<section><div class="sect">今天</div><div class="hrow"><span class="num-xl">${mins}</span><span class="unit">分钟左右</span></div>${todosHTML(left)}</section>`
+  : `<section><div class="sect">今天</div><h2 class="dn">今天的都学完了</h2><p class="dp">想多学一节，点下面的分类接着学。</p></section>`;
+const catsHTML = () => `<div class="sect">分类 3</div>` + CATS.map((c, i) => `<div class="it"><span class="no">0${i + 1}</span><div><h3>${c[0]}</h3><div class="sub">${c[1]}</div><div class="meta"><span class="bar"><i style="transform:scaleX(${c[3]})"></i></span>${c[2]}</div></div><span class="chev">›</span></div>`).join("");
+const NUMS = [2, 1];
+const HEAD = {
+  A: () => `<header class="top"><div class="tl"><h1 class="big">学习<span class="mh a"></span></h1>${DATE}</div>${ACTS}</header>`,
+  B: () => `<header class="top b"><div class="tl"><h1 class="big">学习<span class="mh b"></span></h1>${DATE}</div>${ACTS}<svg class="trail"></svg></header>`,
+  C: () => `<header class="top"><div class="tl"><div class="hz"></div>${DATE}<span class="mh c"></span>${p >= 2 ? `<div class="seal">学完</div>` : ""}</div>${ACTS}</header>`,
+  D: (left, mins) => `<header class="top"><div class="tl"><div class="dd">10.23 周五</div>${left.length
+    ? `<div class="hand"><span>还剩</span>${NUMS.slice(0, p).map((n) => `<span class="n struck">${n}<svg></svg></span>`).join("")}<span class="n now">${NUMS[p]}<svg></svg></span><span>节</span></div><div class="hsub"><span class="hl">大约 ${mins} 分钟<svg></svg></span></div>`
+    : `<div class="hand">今天学完了<span class="ck"><svg></svg></span></div><div class="hsub">想多学一节，去下面的分类</div>`}</div>${ACTS}<span class="mh d"></span></header>`,
+};
+
+function renderHome(fresh, justAdv) {
+  const home = $("#home"), left = TASKS.slice(p), mins = left.reduce((a, t) => a + t.min, 0), o = OPTS[opt];
+  home.innerHTML = `<div class="sb"><span>9:41</span><i></i></div><div class="scroll">${HEAD[opt](left, mins)}${opt === "D" ? (left.length ? `<div style="height:14px"></div>${todosHTML(left)}` : "") : todayHTML(left, mins)}${catsHTML()}</div>`;
+  const host = $(".mh", home);
+  homeM = new Mascot(host, o.kind, { A: 66, B: 54, C: 34, D: 62 }[opt]);
+  if (opt === "A") homeM.set(p >= 2 ? "sleep" : "look");
+  if (opt === "B") homeM.set(p >= 2 ? "sleep" : "idle");
+  if (opt === "C") {
+    hz = hanzi($(".hz", home), $(".tl", home));
+    const W = [0, 6, hz.n][p];
+    const place = (n) => { const [x, y] = hz.at(n); host.style.left = x + "px"; host.style.top = y + "px"; };
+    homeM.set(p >= 2 ? "sleep" : "idle"); if (p < 2) host.classList.add("idle-bob");
+    place(0);
+    if (fresh && W) { host.style.transition = "none"; requestAnimationFrame(() => { host.style.transition = ""; hz.write(0, W, 120, place); }); } else { hz.set(W); place(W); }
+    hz.place = place;
+  }
+  if (opt === "D") {
+    homeM.set(p >= 2 ? "sleep" : "idle"); if (p < 2) host.classList.add("sway");
+    home.querySelectorAll(".n").forEach((n) => {
+      const svg = n.querySelector("svg"), w = n.offsetWidth + 16, h = n.offsetHeight + 12; svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      if (n.classList.contains("struck")) sketch(svg, (rc, s) => grp(rc.line(4, h * 0.62, w - 4, h * 0.4, line(s, 2.4))));
+      else sketch(svg, (rc, s) => grp(rc.ellipse(w / 2, h / 2, w - 6, h - 4, { ...line(s, 2.4), roughness: 1.6, bowing: 2 })), fresh || justAdv ? 520 : 0);
+    });
+    const hl = $(".hl", home);
+    if (hl) { const svg = hl.querySelector("svg"), w = hl.offsetWidth + 4, h = hl.offsetHeight; svg.setAttribute("viewBox", `0 0 ${w} ${h}`); sketch(svg, (rc, s) => grp(rc.rectangle(2, h * 0.45, w - 4, h * 0.5, { ...hatch(s), hachureGap: 2.2, fillWeight: 3, hachureAngle: -20 }))); }
+    const ck = $(".ck svg", home);
+    if (ck) { ck.setAttribute("viewBox", "0 0 40 34"); sketch(ck, (rc, s) => grp(rc.linearPath([[6, 18], [16, 28], [36, 4]], line(s, 3.2))), justAdv ? 500 : 0); }
+  }
+  host.onclick = () => {
+    if (busy) return;
+    const back = homeM.expr;
+    homeM.set("happy").play("hop", 700);
+    bubble(opt === "C" ? $(".hz", home) : host, o.lines[p], home);
+    setTimeout(() => homeM.expr === "happy" && homeM.set(back), 1500);
+  };
+  if (fresh) [...home.querySelectorAll(".todo, .it, .hrow, .sect")].forEach((e, i) => e.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 60 * i, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards" }));
+}
+
+// 首页「学完一件」时各方案自己的动作
+const ADV = {
+  async A(np) { homeM.set("happy").play("hop", 700); await sleep(650); },
+  async B(np) {
+    const home = $("#home"), host = homeM.host, tr = $(".trail", home), hdr = $(".top", home);
+    const [bx, by] = centerIn(host, hdr);
+    const pts = [[0, 0], [60, -34], [150, -18], [176, 40], [96, 74], [26, 40], [0, 0]];
+    tr.innerHTML = ""; sketch(tr, (rc, s) => { const g = grp(rc.curve(pts.map(([x, y]) => [bx + x, by + y]), { ...line(s, 1.6, "#9a9aa0"), roughness: 0.8 })); g.querySelectorAll("path").forEach((q) => (q.style.strokeDasharray = "5 7")); return g; });
+    tr.style.opacity = 1;
+    homeM.set("happy"); host.classList.add("flap");
+    await host.animate(pts.map(([x, y], i) => ({ transform: `translate(${x}px,${y}px) rotate(${i === 0 || i === pts.length - 1 ? 0 : x > 100 ? 12 : -10}deg)` })), { duration: 1700, easing: "ease-in-out" }).finished;
+    host.classList.remove("flap"); homeM.play("hop", 700);
+    tr.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, fill: "forwards" });
+    await sleep(500);
+  },
+  async C(np) {
+    const W = [0, 6, hz.n];
+    homeM.set("happy");
+    await hz.write(W[np - 1], W[np], 260, hz.place);
+    if (np === 2) {
+      const tl = $(".tl", $("#home")), s = document.createElement("div"); s.className = "seal"; s.textContent = "学完"; tl.appendChild(s);
+      s.animate([{ transform: "rotate(-8deg) scale(2.6)", opacity: 0 }, { transform: "rotate(-8deg) scale(.9)", opacity: 1, offset: 0.7 }, { transform: "rotate(-8deg) scale(1)", opacity: 0.92 }], { duration: 420, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" });
+      await sleep(310);
+      $("#home").animate([{ transform: "none" }, { transform: "translate(1px,2px)" }, { transform: "translate(-1px,-1px)" }, { transform: "none" }], { duration: 180 });
+      await sleep(500);
+    }
+  },
+  async D(np) {
+    const n = $(".n.now", $("#home")); if (!n) return;
+    const svg = n.querySelector("svg"), w = n.offsetWidth + 16, h = n.offsetHeight + 12;
+    const st = mk("svg", { viewBox: `0 0 ${w} ${h}` }, n);
+    sketch(st, (rc, s) => grp(rc.line(4, h * 0.62, w - 4, h * 0.4, line(s, 2.8))), 320);
+    n.animate([{ color: "#0b0b0c" }, { color: "#b9b9bd" }], { duration: 400, delay: 200, fill: "forwards" });
+    homeM.set("happy").play("hop", 700);
+    await sleep(600);
+  },
+};
+
+async function advance() {
+  if (busy || p >= 2) return;
+  busy = true;
+  const home = $("#home"), np = p + 1;
+  await ADV[opt](np);
+  const first = $(".todo.first", home);
+  if (first) await first.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(60px)" }], { duration: 320, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" }).finished;
+  p = np;
+  renderHome(false, true);
+  homeM.set(p >= 2 ? "sleep" : "happy");
+  bubble(opt === "C" ? $(".hz", home) : homeM.host, OPTS[opt].lines[p], home);
+  if (p < 2) setTimeout(() => homeM.expr === "happy" && homeM.set(opt === "A" ? "look" : "idle"), 1800);
+  busy = false;
+}
+
+/* ── 上课 ── */
+const QOPTS = [["A", "Key 散在每个人手里"], ["B", "模型回答变慢"], ["C", "提示词没人维护"]];
+function renderChat(body) {
+  $("#chat").innerHTML = `<div class="sb"><span>9:41</span><i></i></div>
+    <div class="dtop"><button class="back">${ICON.back}</button><div><h1>01 网关到底替团队挡了什么</h1><small>AI 中转站</small></div></div>
+    <div class="scroll cs">${body ?? `<p class="ans">中转站这门课第一节。先考你一道，看你对网关有多少底子。</p>
+      <div class="q"><h4>团队直接调模型，最先出事的通常是哪一块？</h4>${QOPTS.map(([k, t]) => `<button class="op" data-k="${k}"><b>${k}</b><span>${t}</span><svg class="mk" viewBox="0 0 30 30"></svg></button>`).join("")}</div>`}<div id="react"></div></div>
+    <div class="comp"><span>直接打字回答</span><i>${ICON.up}</i></div>`;
+}
+async function chatDo(kind) {
+  const K = OPTS[opt].kind;
+  if (kind === "done") return finish(K);
+  renderChat();
+  const c = $("#chat"), r = $("#react", c), sc = $(".cs", c);
+  if (kind === "think") {
+    r.innerHTML = `<div class="waitline"><span class="mh"></span><span>在想</span><i class="dots"><b></b><b></b><b></b></i></div>`;
+    const m = new Mascot($(".mh", r), K, 34).set("think"); m.host.classList.add("think");
+    if (K === "bird") m.host.classList.add("flap");
+  } else {
+    const ok = kind === "right", op = $(`.op[data-k="${ok ? "A" : "B"}"]`, c);
+    op.classList.add(ok ? "ok" : "bad");
+    sketch($(".mk", op), (rc, s) => grp(ok ? rc.linearPath([[5, 16], [12, 24], [26, 5]], line(s, 3)) : [rc.line(7, 7, 23, 23, line(s, 2.6)), rc.line(23, 7, 7, 23, line(s, 2.6))]), 380);
+    await sleep(420);
+    r.innerHTML = `<div class="fb"><span class="mh"></span><p><b>${ok ? "对。" : "不对。"}</b>${ok ? "Key 散在每个人手里，谁用了多少、有没有泄露都没人知道。" : "慢是后面的事，最先出事的是 Key 和花销没人管。"}</p></div>`;
+    r.firstElementChild.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 360, easing: "cubic-bezier(.16,1,.3,1)" });
+    const m = new Mascot($(".mh", r), K, 42).set(ok ? "happy" : "wrong");
+    m.play(ok ? (K === "bird" ? "hop" : "nod") : "tilt", ok ? 900 : 0);
+    if (ok && K === "bird") { m.host.classList.add("flap"); setTimeout(() => m.host.classList.remove("flap"), 700); }
+  }
+  sc.scrollTop = sc.scrollHeight;
+}
+async function finish(K) {
+  const hand = opt === "D", seal = opt === "C";
+  renderChat(`<p class="ans">三道都过了，这一节就到这。</p>
+    <div class="score"><div class="sc-top"><span class="mh"></span>${seal ? `<div class="seal big">4分</div>` : `<div class="sc-n ${hand ? "hand2" : ""}">4<small>分</small>${hand ? "<svg></svg>" : ""}</div>`}</div>
+      <div class="sc-t">01 网关到底替团队挡了什么</div>
+      <ul><li>说得出网关替团队挡的三件事</li><li>知道 Key 为什么要收到一处</li><li>分得清限流和熔断</li><li class="n">计费按什么记</li></ul>
+      <button class="sc-b">回到课程</button></div>`);
+  const c = $("#chat"), host = $(".mh", c), m = new Mascot(host, K, 76).set("celebrate");
+  const boom = () => { const [x, y] = centerIn(host, c); confetti(c, x, y - 10, 18); };
+  if (opt === "A") { m.play("party", 1200); setTimeout(boom, 300); }
+  if (opt === "B") {
+    host.classList.add("flap");
+    await host.animate([{ transform: "translate(-180px,-160px) rotate(-14deg)" }, { transform: "translate(-60px,-120px) rotate(-6deg)", offset: 0.5 }, { transform: "translate(0,-14px) rotate(4deg)", offset: 0.85 }, { transform: "none" }], { duration: 1100, easing: "ease-out" }).finished;
+    host.classList.remove("flap"); m.play("hop", 700); boom();
+  }
+  if (opt === "C") {
+    const s = $(".seal.big", c);
+    s.animate([{ transform: "rotate(-8deg) scale(2.6)", opacity: 0 }, { transform: "rotate(-8deg) scale(.9)", opacity: 1, offset: 0.7 }, { transform: "rotate(-8deg) scale(1)", opacity: 0.92 }], { duration: 440, delay: 250, easing: "cubic-bezier(.5,0,.75,0)", fill: "both" });
+    setTimeout(() => { c.animate([{ transform: "none" }, { transform: "translate(1px,2px)" }, { transform: "translate(-1px,-1px)" }, { transform: "none" }], { duration: 180 }); m.play("party", 1200); boom(); }, 560);
+  }
+  if (opt === "D") {
+    host.animate([{ transform: "scale(2) rotate(-28deg)", opacity: 0 }, { transform: "scale(.92) rotate(10deg)", opacity: 1, offset: 0.7 }, { transform: "scale(1) rotate(7deg)" }], { duration: 460, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" });
+    const n = $(".sc-n.hand2", c), svg = n.querySelector("svg"), w = n.offsetWidth + 20, h = n.offsetHeight + 16;
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    setTimeout(() => { sketch(svg, (rc, s) => grp(rc.ellipse(w / 2, h / 2, w - 6, h - 4, { ...line(s, 2.6), roughness: 1.7, bowing: 2 })), 560); boom(); }, 420);
+  }
+  rise($(".score ul", c).children);
+  setTimeout(() => m.expr === "celebrate" && m.set("happy"), 1800);
+}
+const rise = (els) => [...els].forEach((e, i) => e.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: 500 + 90 * i, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards" }));
+
+/* ── 切方案 ── */
+$("#tabs").innerHTML = Object.entries(OPTS).map(([k, o]) => `<button class="tab" data-o="${k}"><b>${o.name}</b><small>${o.sub}</small></button>`).join("");
+function sync() {
+  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("on", t.dataset.o === opt));
+  $("#idea").textContent = OPTS[opt].idea;
+  p = 0; busy = false;
+  renderHome(true);
+  chatDo("think");
+}
+$("#tabs").onclick = (e) => { const b = e.target.closest(".tab"); if (b) { opt = b.dataset.o; sync(); } };
+$("#adv").onclick = advance;
+$("#reset").onclick = () => { p = 0; busy = false; renderHome(true); };
+document.querySelectorAll("[data-c]").forEach((b) => (b.onclick = () => chatDo(b.dataset.c)));
+const q = new URLSearchParams(location.search);
+if (OPTS[q.get("o")]) opt = q.get("o");
+Promise.race([document.fonts.ready, sleep(2500)]).then(sync);
+</script>
+</body>
+</html>

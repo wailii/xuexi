@@ -1,4 +1,4 @@
-"""在电脑上试 flagos 的 DeepSeek：读听会的 secrets（不打印 Key），流式调用，返回全文和耗时。"""
+"""在电脑上试 OpenAI 兼容接口的模型：读听会的 secrets（不打印 Key），流式调用，返回全文和耗时。"""
 import json, time, urllib.request, pathlib, os, sys
 
 kv = dict(l.strip().split("=", 1) for l in (pathlib.Path.home() / "随便聊聊/meeting-recorder/secrets.properties").read_text().splitlines() if "=" in l and not l.startswith("#"))

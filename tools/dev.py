@@ -1,4 +1,4 @@
-"""电脑上调试用：伺服 web/，并替网页调模型（flagos DeepSeek）和联网搜索（百炼千问）。
+"""电脑上调试用：伺服 web/，并替网页调模型（OpenAI 兼容接口的模型）和联网搜索（百炼千问）。
 用法：python3 tools/dev.py 8971
 Key 从听会的 secrets.properties 读，不进网页。
 """
